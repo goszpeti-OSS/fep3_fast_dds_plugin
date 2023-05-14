@@ -46,7 +46,7 @@ add_library(${PLUGIN_NAME} SHARED
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES FOLDER "plugins/cpp")
 target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILD_SIMBUS)
-target_compile_options(${PLUGIN_NAME} PRIVATE "/Od")
+# target_compile_options(${PLUGIN_NAME} PRIVATE "/Od")
 
 target_link_libraries(${PLUGIN_NAME} PRIVATE
             fastcdr

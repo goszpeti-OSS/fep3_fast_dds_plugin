@@ -18,7 +18,7 @@ add_executable(test_fast_dds_simulation_bus
     C:/Repos/fep3/fep3_fast_dds_plugin/src/fast_dds/types/stream_types.cxx
     C:/Repos/fep3/fep3_fast_dds_plugin/src/fast_dds/types/stream_typesPubSubTypes.cxx
     )
-target_compile_options(test_fast_dds_simulation_bus PRIVATE "/Od")
+# target_compile_options(test_fast_dds_simulation_bus PRIVATE "/Od")
 
 target_include_directories(test_fast_dds_simulation_bus PRIVATE
     "${CMAKE_SOURCE_DIR}/src/plugins/fast_dds"
