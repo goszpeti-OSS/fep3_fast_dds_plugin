@@ -1,0 +1,64 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+
+    strategy:
+      matrix:
+        name:
+          [
+            "ubuntu-20",
+            "windows",
+          ]
+        include:
+          - name: "ubuntu"
+            os: ubuntu-20.04
+            profile: linux_gcc_9
+          - name: "windows"
+            os: windows-2019
+            profile: win_142
+        
+    env:
+      LC_ALL: "en_US.UTF-8"
+      CONAN_REVISIONS_ENABLED: 1
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install specific Conan version
+        run: | # markupsafe is a workaround fix for broken conan dependencies
+          pip install "conan==1.59.0" --use-pep517
+      - name: Build dependencies
+        run: |
+          conan create thirdparty/fastdds/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan create thirdparty/fastdds-cxx/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan create thirdparty/dev_essential/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan create thirdparty/fep3_participant/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+      - name: Build own package
+        run: |
+            conan install . -pr build_profiles/${{ matrix.profile}} -if build
+            conan build . -if build -bf build
+      # TODO: build the rest of fep
+      # conan create thirdparty/fep3_system/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+      # conan create thirdparty/fep3_base_utilities/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+      # conan create thirdparty/fep3_sdk/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+      - name: Upload binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: fep3_fast_dds_plugin_${{matrix.profile}}
+          path: |
+            build/package

@@ -1,0 +1,727 @@
+ CMakeLists.txt                                         |  4 ++--
+ cmake/modules/FindAsio.cmake                           |  4 ++--
+ src/cpp/CMakeLists.txt                                 |  4 ++--
+ test/blackbox/CMakeLists.txt                           |  6 +++---
+ test/communication/CMakeLists.txt                      |  6 +++---
+ test/dds/communication/CMakeLists.txt                  |  2 +-
+ test/performance/latency/CMakeLists.txt                |  2 +-
+ test/performance/throughput/CMakeLists.txt             |  2 +-
+ test/performance/video/CMakeLists.txt                  |  4 ++--
+ test/profiling/CMakeLists.txt                          |  2 +-
+ test/system/tools/fds/CMakeLists.txt                   |  4 ++--
+ test/unittest/dds/publisher/CMakeLists.txt             |  4 ++--
+ test/unittest/dds/status/CMakeLists.txt                |  4 ++--
+ test/unittest/dynamic_types/CMakeLists.txt             | 12 ++++++------
+ test/unittest/logging/CMakeLists.txt                   |  2 +-
+ test/unittest/rtps/DataSharing/CMakeLists.txt          |  2 +-
+ test/unittest/rtps/builtin/CMakeLists.txt              |  2 +-
+ test/unittest/rtps/common/CMakeLists.txt               |  2 +-
+ test/unittest/rtps/discovery/CMakeLists.txt            |  2 +-
+ test/unittest/rtps/network/CMakeLists.txt              |  4 ++--
+ test/unittest/rtps/resources/timedevent/CMakeLists.txt |  2 +-
+ test/unittest/rtps/security/CMakeLists.txt             |  2 +-
+ test/unittest/rtps/writer/CMakeLists.txt               |  6 +++---
+ test/unittest/security/accesscontrol/CMakeLists.txt    |  4 ++--
+ test/unittest/security/authentication/CMakeLists.txt   |  2 +-
+ test/unittest/statistics/dds/CMakeLists.txt            |  8 ++++----
+ test/unittest/statistics/rtps/CMakeLists.txt           |  2 +-
+ test/unittest/transport/CMakeLists.txt                 | 12 ++++++------
+ test/unittest/utils/CMakeLists.txt                     |  2 +-
+ test/unittest/xmlparser/CMakeLists.txt                 | 12 ++++++------
+ test/unittest/xtypes/CMakeLists.txt                    |  2 +-
+ test/xtypes/CMakeLists.txt                             |  2 +-
+ 32 files changed, 65 insertions(+), 65 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ff09ba34b..61f68648d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -233,8 +233,8 @@ if(NOT BUILD_SHARED_LIBS)
+ endif()
+ 
+ eprosima_find_package(fastcdr REQUIRED)
+-eprosima_find_thirdparty(Asio asio VERSION 1.10.8)
+-eprosima_find_thirdparty(TinyXML2 tinyxml2)
++eprosima_find_thirdparty(asio asio VERSION 1.10.8)
++eprosima_find_thirdparty(tinyxml2 tinyxml2)
+ 
+ find_package(foonathan_memory REQUIRED)
+ message(STATUS "Found foonathan_memory: ${foonathan_memory_DIR}")
+diff --git a/cmake/modules/FindAsio.cmake b/cmake/modules/FindAsio.cmake
+index ce8f22d06..02e2dfab6 100644
+--- a/cmake/modules/FindAsio.cmake
++++ b/cmake/modules/FindAsio.cmake
+@@ -28,7 +28,7 @@ else()
+     # An installed version of Asio has been found.
+     # Check that the Asio version is equal to or greater than the minimum version required in Fast DDS.
+     else()
+-        file(READ "${Asio_INCLUDE_DIR}/asio/version.hpp" VERSION_INCLUDE)
++        file(READ "${asio_INCLUDE_DIR}/asio/version.hpp" VERSION_INCLUDE)
+         string(REGEX MATCH "#define ASIO_VERSION ([0-9]+)" REGEX_VERSION ${VERSION_INCLUDE})
+         set(ASIO_VERSION ${CMAKE_MATCH_1})
+         math(EXPR ASIO_PATCH_VERSION ${ASIO_VERSION}%100)
+@@ -62,7 +62,7 @@ if(Asio_INCLUDE_DIR AND (NOT Asio_FOUND_PACKAGE))
+     # Asio is considered to be found if Asio_INCLUDE_DIR is valid.
+     find_package_handle_standard_args(Asio DEFAULT_MSG Asio_INCLUDE_DIR)
+     mark_as_advanced(Asio_INCLUDE_DIR)
+-    message(STATUS "Found Asio ${ASIO_VERSION}: ${Asio_INCLUDE_DIR}")
++    message(STATUS "Found Asio ${ASIO_VERSION}: ${asio_INCLUDE_DIR}")
+ else()
+     message(STATUS "Cannot find package Asio")
+ endif()
+diff --git a/src/cpp/CMakeLists.txt b/src/cpp/CMakeLists.txt
+index 088e7f2cc..b54288af3 100644
+--- a/src/cpp/CMakeLists.txt
++++ b/src/cpp/CMakeLists.txt
+@@ -469,7 +469,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
+     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/cpp>
+     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
+     PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     $<$<BOOL:${TINYXML2_INCLUDE_DIR}>:${TINYXML2_INCLUDE_DIR}>
+     $<$<BOOL:${ANDROID}>:${ANDROID_IFADDRS_INCLUDE_DIR}>
+     ${THIRDPARTY_BOOST_INCLUDE_DIR}
+@@ -486,7 +486,7 @@ endif()
+ # Link library to external libraries.
+ target_link_libraries(${PROJECT_NAME} ${PRIVACY} fastcdr foonathan_memory
+     ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS}
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     $<$<BOOL:${LINK_SSL}>:OpenSSL::SSL$<SEMICOLON>OpenSSL::Crypto$<$<BOOL:${WIN32}>:$<SEMICOLON>crypt32.lib>>
+     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+     ${THIRDPARTY_BOOST_LINK_LIBS}
+diff --git a/test/blackbox/CMakeLists.txt b/test/blackbox/CMakeLists.txt
+index 9d9b474f2..583c8f204 100644
+--- a/test/blackbox/CMakeLists.txt
++++ b/test/blackbox/CMakeLists.txt
+@@ -271,7 +271,7 @@ target_compile_definitions(BlackboxTests_RTPS PRIVATE
+     $<$<BOOL:${WIN32}>:_ENABLE_ATOMIC_ALIGNMENT_FIX>
+     )
+ target_include_directories(BlackboxTests_RTPS PRIVATE
+-    ${Asio_INCLUDE_DIR})
++    ${asio_INCLUDE_DIR})
+ target_link_libraries(BlackboxTests_RTPS fastrtps fastcdr foonathan_memory GTest::gtest)
+ add_blackbox_gtest(BlackboxTests_RTPS SOURCES ${RTPS_BLACKBOXTESTS_TEST_SOURCE} IGNORE ${pkcs_filter})
+ 
+@@ -353,7 +353,7 @@ if(FASTRTPS_API_TESTS)
+         $<$<BOOL:${WIN32}>:_ENABLE_ATOMIC_ALIGNMENT_FIX>
+         )
+     target_include_directories(BlackboxTests_FastRTPS PRIVATE
+-        ${Asio_INCLUDE_DIR}
++        ${asio_INCLUDE_DIR}
+         api/fastrtps_deprecated)
+     target_link_libraries(BlackboxTests_FastRTPS
+         fastrtps
+@@ -402,7 +402,7 @@ if(FASTDDS_PIM_API_TESTS)
+         $<$<BOOL:${WIN32}>:_ENABLE_ATOMIC_ALIGNMENT_FIX>
+         )
+     target_include_directories(BlackboxTests_DDS_PIM PRIVATE
+-        ${Asio_INCLUDE_DIR}
++        ${asio_INCLUDE_DIR}
+         api/dds-pim)
+     target_link_libraries(BlackboxTests_DDS_PIM
+         fastrtps
+diff --git a/test/communication/CMakeLists.txt b/test/communication/CMakeLists.txt
+index 1cd06a98f..ce38d9b85 100644
+--- a/test/communication/CMakeLists.txt
++++ b/test/communication/CMakeLists.txt
+@@ -35,7 +35,7 @@ target_compile_definitions(SimpleCommunicationPublisher PRIVATE
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(SimpleCommunicationPublisher PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/blackbox)
+ target_link_libraries(SimpleCommunicationPublisher fastrtps fastcdr foonathan_memory ${CMAKE_DL_LIBS})
+ 
+@@ -51,7 +51,7 @@ target_compile_definitions(SimpleCommunicationSubscriber PRIVATE
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(SimpleCommunicationSubscriber PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/blackbox)
+ target_link_libraries(SimpleCommunicationSubscriber fastrtps fastcdr foonathan_memory ${CMAKE_DL_LIBS})
+ 
+@@ -69,7 +69,7 @@ target_compile_definitions(SimpleCommunicationPubSub PRIVATE
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(SimpleCommunicationPubSub PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/blackbox)
+ target_link_libraries(SimpleCommunicationPubSub fastrtps fastcdr foonathan_memory ${CMAKE_DL_LIBS})
+ 
+diff --git a/test/dds/communication/CMakeLists.txt b/test/dds/communication/CMakeLists.txt
+index 61043811e..953203028 100644
+--- a/test/dds/communication/CMakeLists.txt
++++ b/test/dds/communication/CMakeLists.txt
+@@ -19,7 +19,7 @@ add_definitions(
+     -DASIO_STANDALONE
+     )
+ 
+-include_directories(${Asio_INCLUDE_DIR})
++include_directories(${asio_INCLUDE_DIR})
+ 
+ ###############################################################################
+ # Binaries
+diff --git a/test/performance/latency/CMakeLists.txt b/test/performance/latency/CMakeLists.txt
+index 42d660491..5bcb7f5d3 100644
+--- a/test/performance/latency/CMakeLists.txt
++++ b/test/performance/latency/CMakeLists.txt
+@@ -30,7 +30,7 @@ target_compile_definitions(LatencyTest PRIVATE
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ 
+-target_include_directories(LatencyTest PRIVATE ${Asio_INCLUDE_DIR})
++target_include_directories(LatencyTest PRIVATE ${asio_INCLUDE_DIR})
+ 
+ target_link_libraries(
+     LatencyTest
+diff --git a/test/performance/throughput/CMakeLists.txt b/test/performance/throughput/CMakeLists.txt
+index f33f8505d..7b8be9340 100644
+--- a/test/performance/throughput/CMakeLists.txt
++++ b/test/performance/throughput/CMakeLists.txt
+@@ -30,7 +30,7 @@ target_compile_definitions(ThroughputTest PRIVATE
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ 
+-target_include_directories(ThroughputTest PRIVATE ${Asio_INCLUDE_DIR})
++target_include_directories(ThroughputTest PRIVATE ${asio_INCLUDE_DIR})
+ 
+ target_link_libraries(
+     ThroughputTest
+diff --git a/test/performance/video/CMakeLists.txt b/test/performance/video/CMakeLists.txt
+index 126c15749..96ea6b7bc 100644
+--- a/test/performance/video/CMakeLists.txt
++++ b/test/performance/video/CMakeLists.txt
+@@ -90,14 +90,14 @@ if(GST_FOUND)
+         target_include_directories(
+             VideoTest
+             PUBLIC
+-            ${Asio_INCLUDE_DIR}
++            ${asio_INCLUDE_DIR}
+             ${GST_INCLUDE_DIRS}
+         )
+     else()
+         target_include_directories(
+             VideoTest
+             PUBLIC
+-            ${Asio_INCLUDE_DIR}
++            ${asio_INCLUDE_DIR}
+             $ENV{GSTREAMER_1_0_ROOT_X86_64}/include
+             $ENV{GSTREAMER_1_0_ROOT_X86_64}/include/glib-2.0
+             $ENV{GSTREAMER_1_0_ROOT_X86_64}/include/gstreamer-1.0
+diff --git a/test/profiling/CMakeLists.txt b/test/profiling/CMakeLists.txt
+index b54f935da..987ed86df 100644
+--- a/test/profiling/CMakeLists.txt
++++ b/test/profiling/CMakeLists.txt
+@@ -41,7 +41,7 @@ set(MEMORYTEST_SOURCE MemoryTestPublisher.cpp
+     main_MemoryTest.cpp
+     )
+ add_executable(MemoryTest ${MEMORYTEST_SOURCE})
+-target_include_directories(MemoryTest PRIVATE ${Asio_INCLUDE_DIR})
++target_include_directories(MemoryTest PRIVATE ${asio_INCLUDE_DIR})
+ target_link_libraries(MemoryTest fastrtps foonathan_memory fastdds::optionparser ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+ 
+ configure_file("cycles_tests.py" "cycles_tests.py")
+diff --git a/test/system/tools/fds/CMakeLists.txt b/test/system/tools/fds/CMakeLists.txt
+index 063f91820..c43aacd9d 100644
+--- a/test/system/tools/fds/CMakeLists.txt
++++ b/test/system/tools/fds/CMakeLists.txt
+@@ -75,10 +75,10 @@ if(PYTHONINTERP_FOUND)
+ 
+         if(TARGET tinyxml2 OR TARGET tinyxml2::tinyxml2)
+             set(TEST_ENVIRONMENT
+-                "${TEST_ENVIRONMENT};$<TARGET_FILE_DIR:${TINYXML2_LIBRARY}>")
++                "${TEST_ENVIRONMENT};$<TARGET_FILE_DIR:tinyxml2::tinyxml2>")
+         elseif(EXISTS TINYXML2_LIBRARY)
+             get_filename_component(
+-                TINYXML2_LIBRARY_DIR ${TINYXML2_LIBRARY} DIRECTORY)
++                TINYXML2_LIBRARY_DIR tinyxml2::tinyxml2 DIRECTORY)
+             set(TEST_ENVIRONMENT
+                 "${TEST_ENVIRONMENT};${TINYXML2_LIBRARY_DIR}")
+             unset(TINYXML2_LIBRARY_DIR)
+diff --git a/test/unittest/dds/publisher/CMakeLists.txt b/test/unittest/dds/publisher/CMakeLists.txt
+index dfaf86a9e..b1edfab1b 100644
+--- a/test/unittest/dds/publisher/CMakeLists.txt
++++ b/test/unittest/dds/publisher/CMakeLists.txt
+@@ -349,7 +349,7 @@ target_include_directories(DataWriterTests PRIVATE
+     $<$<BOOL:${OPENSSL_INCLUDE_DIR}>:${OPENSSL_INCLUDE_DIR}>
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/PublisherHistory
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/src/cpp
+     ${THIRDPARTY_BOOST_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/thirdparty/taocpp-pegtl
+@@ -357,7 +357,7 @@ target_include_directories(DataWriterTests PRIVATE
+ target_link_libraries(DataWriterTests fastcdr foonathan_memory
+     GTest::gmock
+     ${CMAKE_DL_LIBS}
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     $<$<BOOL:${LINK_SSL}>:OpenSSL::SSL$<SEMICOLON>OpenSSL::Crypto>
+     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+     ${THIRDPARTY_BOOST_LINK_LIBS}
+diff --git a/test/unittest/dds/status/CMakeLists.txt b/test/unittest/dds/status/CMakeLists.txt
+index f16d3d705..81c6fa7fe 100644
+--- a/test/unittest/dds/status/CMakeLists.txt
++++ b/test/unittest/dds/status/CMakeLists.txt
+@@ -154,7 +154,7 @@ target_compile_definitions(ListenerTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${WIN32}>:_ENABLE_ATOMIC_ALIGNMENT_FIX>
+     )
+ target_include_directories(ListenerTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/DataSharingPayloadPool
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/RTPSReader
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/RTPSWriter
+@@ -190,7 +190,7 @@ target_include_directories(ListenerTests PRIVATE
+     )
+ 
+ target_link_libraries(ListenerTests fastcdr foonathan_memory
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     GTest::gmock
+     ${CMAKE_DL_LIBS}
+     ${THIRDPARTY_BOOST_LINK_LIBS}
+diff --git a/test/unittest/dynamic_types/CMakeLists.txt b/test/unittest/dynamic_types/CMakeLists.txt
+index 64f459cc0..182c2bcc7 100644
+--- a/test/unittest/dynamic_types/CMakeLists.txt
++++ b/test/unittest/dynamic_types/CMakeLists.txt
+@@ -114,7 +114,7 @@ target_compile_definitions(DynamicTypesTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(DynamicTypesTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/TCPTransportDescriptor
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/TCPv4TransportDescriptor
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/TCPv6TransportDescriptor
+@@ -130,7 +130,7 @@ target_include_directories(DynamicTypesTests PRIVATE
+ target_link_libraries(DynamicTypesTests GTest::gtest
+     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+     $<$<BOOL:${WIN32}>:ws2_32>
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     fastcdr
+     )
+ if(QNX)
+@@ -147,14 +147,14 @@ target_compile_definitions(DynamicComplexTypesTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(DynamicComplexTypesTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp
+     $<$<BOOL:${ANDROID}>:${ANDROID_IFADDRS_INCLUDE_DIR}>)
+ target_link_libraries(DynamicComplexTypesTests GTest::gtest
+     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+     $<$<BOOL:${WIN32}>:ws2_32>
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     fastcdr
+     )
+ if(QNX)
+@@ -171,13 +171,13 @@ target_compile_definitions(DynamicTypes_4_2_Tests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(DynamicTypes_4_2_Tests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp)
+     target_link_libraries(DynamicTypes_4_2_Tests GTest::gtest
+     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+     $<$<BOOL:${WIN32}>:ws2_32>
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     fastcdr
+     $<$<BOOL:${ANDROID}>:${ANDROID_IFADDRS_INCLUDE_DIR}>
+     )
+diff --git a/test/unittest/logging/CMakeLists.txt b/test/unittest/logging/CMakeLists.txt
+index 232b1490c..7b40a9edd 100644
+--- a/test/unittest/logging/CMakeLists.txt
++++ b/test/unittest/logging/CMakeLists.txt
+@@ -80,7 +80,7 @@ target_include_directories(LogFileTests PRIVATE
+     ${PROJECT_SOURCE_DIR}/src/cpp)
+ target_link_libraries(LogFileTests GTest::gtest ${MOCKS}
+     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     fastcdr
+     )
+ add_gtest(LogFileTests SOURCES ${LOGFILETESTS_TEST_SOURCE})
+diff --git a/test/unittest/rtps/DataSharing/CMakeLists.txt b/test/unittest/rtps/DataSharing/CMakeLists.txt
+index 76a77dab7..8747ed4d6 100644
+--- a/test/unittest/rtps/DataSharing/CMakeLists.txt
++++ b/test/unittest/rtps/DataSharing/CMakeLists.txt
+@@ -30,7 +30,7 @@ target_compile_definitions(SHMSegmentTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${MSVC}>:NOMINMAX> # avoid conflict with std::min & std::max in visual studio
+     )
+ target_include_directories(SHMSegmentTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/SharedMemSegment
+     ${PROJECT_SOURCE_DIR}/include
+     ${PROJECT_BINARY_DIR}/include
+diff --git a/test/unittest/rtps/builtin/CMakeLists.txt b/test/unittest/rtps/builtin/CMakeLists.txt
+index e726ea9e3..f413eb1d1 100644
+--- a/test/unittest/rtps/builtin/CMakeLists.txt
++++ b/test/unittest/rtps/builtin/CMakeLists.txt
+@@ -85,7 +85,7 @@ target_include_directories(BuiltinDataSerializationTests PRIVATE
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/NetworkFactory
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     $<$<BOOL:${ANDROID}>:${ANDROID_IFADDRS_INCLUDE_DIR}>
+     )
+ target_link_libraries(BuiltinDataSerializationTests foonathan_memory
+diff --git a/test/unittest/rtps/common/CMakeLists.txt b/test/unittest/rtps/common/CMakeLists.txt
+index a7432e820..44bb08949 100644
+--- a/test/unittest/rtps/common/CMakeLists.txt
++++ b/test/unittest/rtps/common/CMakeLists.txt
+@@ -68,7 +68,7 @@ target_compile_definitions(GuidUtilsTests PRIVATE FASTRTPS_NO_LIB
+ target_include_directories(GuidUtilsTests PRIVATE
+     ${PROJECT_SOURCE_DIR}/src/cpp
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     $<$<BOOL:${ANDROID}>:${ANDROID_IFADDRS_INCLUDE_DIR}>)
+ target_link_libraries(GuidUtilsTests GTest::gtest)
+ if(QNX)
+diff --git a/test/unittest/rtps/discovery/CMakeLists.txt b/test/unittest/rtps/discovery/CMakeLists.txt
+index 25b790322..f8fde98e1 100644
+--- a/test/unittest/rtps/discovery/CMakeLists.txt
++++ b/test/unittest/rtps/discovery/CMakeLists.txt
+@@ -81,7 +81,7 @@ target_include_directories(EdpTests PRIVATE
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/SecurityManager
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     )
+ target_link_libraries(EdpTests foonathan_memory
+     GTest::gmock
+diff --git a/test/unittest/rtps/network/CMakeLists.txt b/test/unittest/rtps/network/CMakeLists.txt
+index 7a2f36d7c..911a0668b 100644
+--- a/test/unittest/rtps/network/CMakeLists.txt
++++ b/test/unittest/rtps/network/CMakeLists.txt
+@@ -82,7 +82,7 @@ target_compile_definitions(NetworkFactoryTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(NetworkFactoryTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/ParticipantProxyData
+     ${PROJECT_SOURCE_DIR}/test/mock/dds/QosPolicies
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/MessageReceiver
+@@ -149,7 +149,7 @@ target_compile_definitions(ExternalLocatorsProcessorTests PRIVATE FASTRTPS_NO_LI
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(ExternalLocatorsProcessorTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/ParticipantProxyData
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/ReaderProxyData
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/WriterProxyData
+diff --git a/test/unittest/rtps/resources/timedevent/CMakeLists.txt b/test/unittest/rtps/resources/timedevent/CMakeLists.txt
+index fc8963271..390e84132 100644
+--- a/test/unittest/rtps/resources/timedevent/CMakeLists.txt
++++ b/test/unittest/rtps/resources/timedevent/CMakeLists.txt
+@@ -45,7 +45,7 @@ target_compile_definitions(TimedEventTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(TimedEventTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/include
+     ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp
+diff --git a/test/unittest/rtps/security/CMakeLists.txt b/test/unittest/rtps/security/CMakeLists.txt
+index 0f4062623..001d3385d 100644
+--- a/test/unittest/rtps/security/CMakeLists.txt
++++ b/test/unittest/rtps/security/CMakeLists.txt
+@@ -64,7 +64,7 @@ target_compile_definitions(SecurityAuthentication PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(SecurityAuthentication PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${OPENSSL_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/SecurityPluginFactory
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/Endpoint
+diff --git a/test/unittest/rtps/writer/CMakeLists.txt b/test/unittest/rtps/writer/CMakeLists.txt
+index 0d02ca13e..5310821b5 100644
+--- a/test/unittest/rtps/writer/CMakeLists.txt
++++ b/test/unittest/rtps/writer/CMakeLists.txt
+@@ -38,7 +38,7 @@ target_compile_definitions(ReaderProxyTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(ReaderProxyTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/Endpoint
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/RTPSWriter
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/WriterHistory
+@@ -82,7 +82,7 @@ target_compile_definitions(LivelinessManagerTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(LivelinessManagerTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/include
+     ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp
+@@ -102,7 +102,7 @@ if(NOT QNX)
+         $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+         )
+     target_include_directories(RTPSWriterTests PRIVATE
+-        ${Asio_INCLUDE_DIR})
++        ${asio_INCLUDE_DIR})
+     target_link_libraries(RTPSWriterTests fastcdr fastrtps foonathan_memory
+         GTest::gmock
+         ${CMAKE_DL_LIBS})
+diff --git a/test/unittest/security/accesscontrol/CMakeLists.txt b/test/unittest/security/accesscontrol/CMakeLists.txt
+index d90935627..2cbbb6e99 100644
+--- a/test/unittest/security/accesscontrol/CMakeLists.txt
++++ b/test/unittest/security/accesscontrol/CMakeLists.txt
+@@ -77,7 +77,7 @@ target_compile_definitions(AccessControlTests PRIVATE FASTRTPS_NO_LIB
+     )
+ 
+ target_include_directories(AccessControlTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/NetworkFactory/
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/PDPSimple
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/EDP
+@@ -96,7 +96,7 @@ target_link_libraries(AccessControlTests
+     fastcdr
+     foonathan_memory
+     $<$<BOOL:${WIN32}>:ws2_32>
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     $<$<BOOL:${LibP11_FOUND}>:eProsima_p11>  # $<TARGET_NAME_IF_EXISTS:eProsima_p11>
+     )
+ if(QNX)
+diff --git a/test/unittest/security/authentication/CMakeLists.txt b/test/unittest/security/authentication/CMakeLists.txt
+index c832f5969..346a9c8e1 100644
+--- a/test/unittest/security/authentication/CMakeLists.txt
++++ b/test/unittest/security/authentication/CMakeLists.txt
+@@ -58,7 +58,7 @@ target_compile_definitions(BuiltinPKIDH PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(BuiltinPKIDH PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/NetworkFactory/
+     ${OPENSSL_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+diff --git a/test/unittest/statistics/dds/CMakeLists.txt b/test/unittest/statistics/dds/CMakeLists.txt
+index bc0835c49..9d5eaa8fc 100644
+--- a/test/unittest/statistics/dds/CMakeLists.txt
++++ b/test/unittest/statistics/dds/CMakeLists.txt
+@@ -59,7 +59,7 @@ target_compile_definitions(StatisticsQosTests PRIVATE FASTRTPS_NO_LIB BOOST_ASIO
+     )
+ target_include_directories(StatisticsQosTests PRIVATE
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/src/cpp ${THIRDPARTY_BOOST_INCLUDE_DIR})
+-target_link_libraries(StatisticsQosTests fastrtps fastcdr ${TINYXML2_LIBRARY} foonathan_memory GTest::gtest)
++target_link_libraries(StatisticsQosTests fastrtps fastcdr tinyxml2::tinyxml2 foonathan_memory GTest::gtest)
+ add_gtest(StatisticsQosTests SOURCES ${STATISTICS_QOS_TESTS_SOURCE})
+ 
+ ## StatisticsDomainParticipantListenerTests
+@@ -85,7 +85,7 @@ if (FASTDDS_STATISTICS)
+         ${PROJECT_BINARY_DIR}/include
+         ${PROJECT_SOURCE_DIR}/src/cpp)
+     target_link_libraries(DomainParticipantStatisticsListenerTests
+-        ${TINYXML2_LIBRARY} fastcdr GTest::gmock )
++        tinyxml2::tinyxml2 fastcdr GTest::gmock )
+     add_gtest(DomainParticipantStatisticsListenerTests
+         SOURCES ${DOMAINPARTICIPANTSTATISTICSLISTENER_TESTS_SOURCE})
+ endif()
+@@ -354,7 +354,7 @@ if (SQLITE3_SUPPORT AND FASTDDS_STATISTICS AND NOT QNX)
+         ${PROJECT_SOURCE_DIR}/test/mock/dds/DomainParticipantImpl/
+         ${PROJECT_SOURCE_DIR}/include
+         ${PROJECT_BINARY_DIR}/include
+-        ${Asio_INCLUDE_DIR}
++        ${asio_INCLUDE_DIR}
+         ${PROJECT_SOURCE_DIR}/src/cpp
+         ${THIRDPARTY_BOOST_INCLUDE_DIR})
+     target_link_libraries(StatisticsDomainParticipantMockTests ${PRIVACY}
+@@ -362,7 +362,7 @@ if (SQLITE3_SUPPORT AND FASTDDS_STATISTICS AND NOT QNX)
+         foonathan_memory
+         GTest::gmock
+         ${CMAKE_DL_LIBS}
+-        ${TINYXML2_LIBRARY}
++        tinyxml2::tinyxml2
+         $<$<BOOL:${LINK_SSL}>:OpenSSL::SSL$<SEMICOLON>OpenSSL::Crypto>
+         $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+         ${THIRDPARTY_BOOST_LINK_LIBS}
+diff --git a/test/unittest/statistics/rtps/CMakeLists.txt b/test/unittest/statistics/rtps/CMakeLists.txt
+index 84b8146dd..b61889f6d 100644
+--- a/test/unittest/statistics/rtps/CMakeLists.txt
++++ b/test/unittest/statistics/rtps/CMakeLists.txt
+@@ -34,7 +34,7 @@ target_include_directories(RTPSStatisticsTests PRIVATE
+     ${PROJECT_SOURCE_DIR}/include
+     ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     )
+ 
+ target_link_libraries(RTPSStatisticsTests fastrtps fastcdr GTest::gtest GTest::gmock)
+diff --git a/test/unittest/transport/CMakeLists.txt b/test/unittest/transport/CMakeLists.txt
+index 1ef6441f3..3ca7992d1 100644
+--- a/test/unittest/transport/CMakeLists.txt
++++ b/test/unittest/transport/CMakeLists.txt
+@@ -240,7 +240,7 @@ target_compile_definitions(UDPv4Tests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(UDPv4Tests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/MessageReceiver
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/ReceiverResource
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+@@ -268,7 +268,7 @@ if(NOT DISABLE_UDPV6_TESTS)
+         $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+         )
+     target_include_directories(UDPv6Tests PRIVATE
+-        ${Asio_INCLUDE_DIR}
++        ${asio_INCLUDE_DIR}
+         ${PROJECT_SOURCE_DIR}/test/mock/rtps/MessageReceiver
+         ${PROJECT_SOURCE_DIR}/test/mock/rtps/ReceiverResource
+         ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+@@ -292,7 +292,7 @@ if(NOT DISABLE_UDPV6_TESTS)
+         $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+         )
+     target_include_directories(TCPv6Tests PRIVATE
+-        ${Asio_INCLUDE_DIR}
++        ${asio_INCLUDE_DIR}
+         ${PROJECT_SOURCE_DIR}/test/mock/rtps/ParticipantProxyData
+         ${PROJECT_SOURCE_DIR}/test/mock/dds/QosPolicies
+         ${PROJECT_SOURCE_DIR}/test/mock/rtps/MessageReceiver
+@@ -323,7 +323,7 @@ target_compile_definitions(test_UDPv4Tests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(test_UDPv4Tests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/ParticipantProxyData
+     ${PROJECT_SOURCE_DIR}/test/mock/dds/QosPolicies
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/MessageReceiver
+@@ -352,7 +352,7 @@ target_compile_definitions(TCPv4Tests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(TCPv4Tests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/ParticipantProxyData
+     ${PROJECT_SOURCE_DIR}/test/mock/dds/QosPolicies
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/MessageReceiver
+@@ -386,7 +386,7 @@ if(IS_THIRDPARTY_BOOST_OK)
+         )
+ 
+     target_include_directories(SharedMemTests PRIVATE
+-        ${Asio_INCLUDE_DIR}
++        ${asio_INCLUDE_DIR}
+         ${PROJECT_SOURCE_DIR}/test/mock/rtps/MessageReceiver
+         ${PROJECT_SOURCE_DIR}/test/mock/rtps/ReceiverResource
+         ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+diff --git a/test/unittest/utils/CMakeLists.txt b/test/unittest/utils/CMakeLists.txt
+index 0d9a256da..946e4889b 100644
+--- a/test/unittest/utils/CMakeLists.txt
++++ b/test/unittest/utils/CMakeLists.txt
+@@ -108,7 +108,7 @@ target_compile_definitions(LocatorTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(LocatorTests PRIVATE
+-    ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include ${Asio_INCLUDE_DIR}
++    ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/src/cpp)
+ target_link_libraries(LocatorTests GTest::gtest ${MOCKS})
+ if(QNX)
+diff --git a/test/unittest/xmlparser/CMakeLists.txt b/test/unittest/xmlparser/CMakeLists.txt
+index edb69a496..77272a7f1 100644
+--- a/test/unittest/xmlparser/CMakeLists.txt
++++ b/test/unittest/xmlparser/CMakeLists.txt
+@@ -150,14 +150,14 @@ target_include_directories(XMLProfileParserTests PRIVATE
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/UDPv4TransportDescriptor
+     ${PROJECT_SOURCE_DIR}/test/mock/rtps/UDPv6TransportDescriptor
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     $<$<BOOL:${ANDROID}>:${ANDROID_IFADDRS_INCLUDE_DIR}>
+     )
+ 
+ target_link_libraries(XMLProfileParserTests GTest::gmock
+     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+     $<$<BOOL:${WIN32}>:ws2_32>
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     fastcdr
+     )
+ if(QNX)
+@@ -250,14 +250,14 @@ target_include_directories(XMLParserTests PRIVATE
+     ${PROJECT_SOURCE_DIR}/include
+     ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     $<$<BOOL:${ANDROID}>:${ANDROID_IFADDRS_INCLUDE_DIR}>
+     )
+ 
+ target_link_libraries(XMLParserTests GTest::gtest
+     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+     $<$<BOOL:${WIN32}>:ws2_32>
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     fastcdr
+     )
+ if(QNX)
+@@ -384,14 +384,14 @@ target_include_directories(XMLEndpointParserTests PRIVATE
+     ${PROJECT_SOURCE_DIR}/include
+     ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     $<$<BOOL:${ANDROID}>:${ANDROID_IFADDRS_INCLUDE_DIR}>
+     )
+ 
+ target_link_libraries(XMLEndpointParserTests GTest::gtest
+     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+     $<$<BOOL:${WIN32}>:ws2_32>
+-    ${TINYXML2_LIBRARY}
++    tinyxml2::tinyxml2
+     fastcdr
+     )
+ if(QNX)
+diff --git a/test/unittest/xtypes/CMakeLists.txt b/test/unittest/xtypes/CMakeLists.txt
+index f675325bb..2dded8c9b 100644
+--- a/test/unittest/xtypes/CMakeLists.txt
++++ b/test/unittest/xtypes/CMakeLists.txt
+@@ -79,7 +79,7 @@ target_compile_definitions(XTypesTests PRIVATE FASTRTPS_NO_LIB
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+ target_include_directories(XTypesTests PRIVATE
+-    ${Asio_INCLUDE_DIR}
++    ${asio_INCLUDE_DIR}
+     ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+     ${PROJECT_SOURCE_DIR}/src/cpp
+     )
+diff --git a/test/xtypes/CMakeLists.txt b/test/xtypes/CMakeLists.txt
+index a9d523dba..487daa8ad 100644
+--- a/test/xtypes/CMakeLists.txt
++++ b/test/xtypes/CMakeLists.txt
+@@ -102,6 +102,6 @@ target_compile_definitions(XTypesBlackBoxTests PRIVATE
+     $<$<AND:$<NOT:$<BOOL:${WIN32}>>,$<STREQUAL:"${CMAKE_BUILD_TYPE}","Debug">>:__DEBUG>
+     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
+     )
+-target_include_directories(XTypesBlackBoxTests PRIVATE ${Asio_INCLUDE_DIR})
++target_include_directories(XTypesBlackBoxTests PRIVATE ${asio_INCLUDE_DIR})
+ target_link_libraries(XTypesBlackBoxTests fastrtps fastcdr GTest::gtest)
+ add_xtypes_gtest(XTypesBlackBoxTests SOURCES ${XTYPES_TESTS_SOURCE})
