@@ -1,3 +1,6 @@
+<a href="http://www.eprosima.com"><img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSd0PDlVz1U_7MgdTe0FRIWD0Jc9_YH-gGi0ZpLkr-qgCI6ZEoJZ5GBqQ" hspace="8" vspace="2" width="100" height="100" ></a>
+<a href="http://www.eprosima.com"><img src="https://raw.githubusercontent.com/cariad-tech/fep3_sdk/main/doc/images/fep_logo_white.png" align="left" hspace="8" vspace="2" width="100" height="100" ></a>
+
 # FEP3 eProsima Fast DDS Simulation Bus Plugin
 
 This project aim to add an open source simulation bus to the FEP3 SDK for the purpose of showcasing its capabilities. It does not aim to be a fully featured and fast implementation.
@@ -14,9 +17,9 @@ What is working?
 
 Possible issues with timing where not analized yet. 
 
-# Qos
+### Qos
 
-Fully featured trough the USER_QOS_PROFILES.xml.
+Fully featured through the USER_QOS_PROFILES.xml.
 
 ## Using the Adapter
 
