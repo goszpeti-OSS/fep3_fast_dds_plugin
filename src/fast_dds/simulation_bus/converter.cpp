@@ -21,13 +21,13 @@ std::chrono::nanoseconds convertTimestamp(const eprosima::fastrtps::rtps::Time_t
 fep3::Result convertExceptionToResult(const eprosima::fastrtps::rtps::Exception& exception)
 {
     RETURN_ERROR_DESCRIPTION(fep3::ERR_FAILED,
-        "simulation bus: rti connext: %s",
+        "simulation bus: Fast DDS: %s",
         exception.what());
 }
 
 fep3::Result convertExceptionToResult(const std::exception& exception)
 {
     RETURN_ERROR_DESCRIPTION(fep3::ERR_FAILED,
-        "simulation bus: rti connext: %s",
+        "simulation bus: Fast DDS: %s",
         exception.what());
 }

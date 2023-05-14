@@ -1,6 +1,3 @@
-
-
-
 #include <fep3/plugin/cpp/cpp_plugin_impl_arya.hpp>
 #include <fep3/plugin/cpp/cpp_plugin_component_factory.h>
 #include <fep3/components/base/component.h>

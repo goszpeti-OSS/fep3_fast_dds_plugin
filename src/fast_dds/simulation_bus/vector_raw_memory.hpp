@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include <fep3/base/sample/raw_memory_intf.h>

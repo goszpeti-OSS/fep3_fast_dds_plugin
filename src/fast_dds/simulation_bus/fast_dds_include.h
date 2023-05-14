@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #pragma warning( push )

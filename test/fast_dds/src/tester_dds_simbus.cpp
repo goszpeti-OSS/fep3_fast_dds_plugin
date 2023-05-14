@@ -337,92 +337,6 @@ TEST_F(ReaderWriterTestClass, TestCorrectOrderOfSampleAndStreamType)
     sender_thread.join();
 }
 
-//
-//TEST_F(ReaderWriterTestClass, TestCorrectOrderOfSampleAndStreamType)
-//{
-//    OrderTestReceiver sample_receiver;
-//    eprosima::fastdds::dds::TypeSupport type(new fep3::ddstypes::BusDataPubSubType());
-//    type.register_type(_i_participant_s);
-//    SubscriberQos sqos = SUBSCRIBER_QOS_DEFAULT;
-//    auto subscriber_ = _i_participant_s->create_subscriber(sqos, nullptr);
-//    auto topic_s = _i_participant_s->create_topic(
-//        findFreeTopic() + "1",
-//        type.get_type_name(),
-//        TOPIC_QOS_DEFAULT);
-//    DataReaderQos rtqos = DATAREADER_QOS_DEFAULT;
-//    rtqos.history().kind = KEEP_LAST_HISTORY_QOS;
-//    rtqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
-//    rtqos.durability().kind = VOLATILE_DURABILITY_QOS;
-//    auto reader = subscriber_->create_datareader(topic_s, rtqos);
-//
-//    type.register_type(_i_participant_p);
-//    PublisherQos pqos = PUBLISHER_QOS_DEFAULT;
-//    auto publisher = _i_participant_p->create_publisher(pqos, nullptr);
-//    auto topic_p = _i_participant_p->create_topic(
-//        findFreeTopic() + "1",
-//        type.get_type_name(),
-//        TOPIC_QOS_DEFAULT); 
-//    DataWriterQos wqos = DATAWRITER_QOS_DEFAULT;
-//    wqos.history().kind = KEEP_LAST_HISTORY_QOS;
-//    wqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
-//    wqos.durability().kind = VOLATILE_DURABILITY_QOS;
-//    wqos.history().depth = 10;
-//
-//    auto writer = publisher->create_datawriter(topic_p, wqos);
-//    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//
-//    // std::thread sender_thread([&]()
-//    // {
-//        for (uint8_t i = 0; i < 100; i++)
-//        {
-//            auto a = base::DataSampleType<uint8_t>(i);
-//            fep3::ddstypes::BusData data;
-//            std::vector<uint8_t> buffer(static_cast<const uint8_t*>(a.cdata()), static_cast<const uint8_t*>(a.cdata()) + a.size());
-//            data.data(buffer);
-//
-//            _writer->write(base::DataSampleType<uint8_t>(i));
-//            _writer->write(base::StreamTypePlain<uint32_t>());
-//            _writer->transmit();
-//            PublicationMatchedStatus status ;
-//            writer->get_publication_matched_status(status);
-//            if (status.total_count == 0 ){
-//                std::cout << "No match writer" << std::endl;
-//
-//            }
-//            auto res = writer->write(&data);
-//            if (!res){
-//                std::cout << "Message " << " Can't write" << std::endl;
-//
-//            }
-//
-//        //}
-//    // });
-//
-//    // for (int i = 0; i < 100; i++)
-//    // {
-//        _reader->pop(sample_receiver);
-//        _reader->pop(sample_receiver);
-//        SampleInfo info;
-//        SubscriptionMatchedStatus s;
-//        auto sms = reader->get_subscription_matched_status(s);
-//        auto c = s.current_count;
-//        // std::cout << "Count " << c << std::endl;
-//        fep3::ddstypes::BusData data_s;
-//
-//        if (reader->read_next_sample((void*)&data_s, &info) == ReturnCode_t::RETCODE_OK)
-//        {
-//            if (info.instance_state == ALIVE_INSTANCE_STATE)
-//            {
-//                // Print your structure data here.
-//                auto d = data_s.data();
-//                // std::cout << "Message " << " RECEIVED" << std::endl;
-//            }
-//        }
-//   }
-//
-//    //sender_thread.join();
-//}
-
 TEST_F(ReaderWriterTestClass, TestPopOfDataReader)
 {
 
@@ -614,7 +528,7 @@ TEST_F(ReaderWriterTestClass, TestOverSizedPlainArray)
     }
 }
 /*
-* @detail Test logger is correct distributed in RTI DDS Simulation Bus
+* @detail Test logger is correct distributed in Fast DDS Simulation Bus
 *
 * @req_id FEPSDK-2839
 */
@@ -637,7 +551,7 @@ TEST_F(ReaderWriterTestClass, TestLogging)
 
 /*
 * @detail Test qos change from big streamtype "anonymus" qos to small streamtype qos "c-plain"
-* This include to recreate rti reader and writer to change qos settings
+* This include to recreate reader and writer to change qos settings
 * 
 * @req_id FEPSDK-2892
 */
@@ -691,8 +605,7 @@ TEST_F(ReaderWriterTestClass, TestChangeFromBigToSmallToBigQOS)
     EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(15)));
 
     // Now check that the write also can change his qos settings
-    // By default we can not send big data over a signal with small qos settings. RTI would tell us:
-    // "Reliable fragmented data requires asynchronous writer"
+    // By default we can not send big data over a signal with small qos settings.
 
     const data_read_ptr<const IDataSample> image_sample1 = std::make_shared<RandomSample>(24883200);
     const data_read_ptr<const IDataSample> image_sample2 = std::make_shared<RandomSample>(24883200);
@@ -781,7 +694,7 @@ TEST_F(ReaderWriterTestClass, TestReaderAfterStartReception)
  * @detail Test send and receive of samples with one listener on a different domain
  * @req_id FEPSDK-Sample
  */
-TEST_F(TestConnextDDSSimulationBus, SendAndReceiveSamplesLateJoiner)
+TEST_F(TestFastDDSSimulationBus, SendAndReceiveSamplesLateJoiner)
 {
     std::string topic = makePlatformDepName("breadcrumb");
 

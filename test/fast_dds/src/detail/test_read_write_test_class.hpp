@@ -9,7 +9,7 @@
 #include "helper/platform_dep_name.h"
 #include "fast_dds/simulation_bus/fast_dds_include.h"
 
-class ReaderWriterTestClass : public TestConnextDDSSimulationBus
+class ReaderWriterTestClass : public TestFastDDSSimulationBus
 {
 public:
     class Components : public IComponents
@@ -56,7 +56,7 @@ protected:
 
     virtual void SetUp()
     {
-        TestConnextDDSSimulationBus::SetUp();
+        TestFastDDSSimulationBus::SetUp();
 
         _domain_id = randomDomainId();
         _sim_participant_name_1 = makePlatformDepName("simbus_participant_1");

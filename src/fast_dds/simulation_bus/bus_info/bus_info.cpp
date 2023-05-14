@@ -1,6 +1,3 @@
-// #include <rti/core/ListenerBinder.hpp>
-
-
 #include "bus_info.h"
 
 ParticipantBuiltinTopicDataListener::ParticipantBuiltinTopicDataListener(BusInfo* businfo)

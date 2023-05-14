@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include <fep3/components/simulation_bus/simulation_bus_intf.h>

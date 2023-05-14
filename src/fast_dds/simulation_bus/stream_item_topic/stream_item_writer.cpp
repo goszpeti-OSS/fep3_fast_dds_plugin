@@ -1,6 +1,3 @@
-
-
-
 #include "../vector_raw_memory.hpp"
 #include "../converter.h"
 

@@ -1,6 +1,3 @@
-
-
-
 #include "stream_item_reader.h"
 
 using namespace fep3;

@@ -31,7 +31,7 @@ using namespace fep3;
 
 static const std::string default_test_name = "default_test_system";
 
-class TestConnextDDSSimulationBus
+class TestFastDDSSimulationBus
     : public ::testing::Test
 {
 public:

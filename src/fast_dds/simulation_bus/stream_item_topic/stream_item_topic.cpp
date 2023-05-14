@@ -1,6 +1,3 @@
-
-
-
 #include "stream_item_topic.h"
 #include <fep3/base/stream_type/default_stream_type.h>
 

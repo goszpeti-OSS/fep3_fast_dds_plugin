@@ -21,7 +21,7 @@ MATCHER_P(DataSampleSmartPtrValueMatcher, pointer_to_expected_value, "Matcher fo
  * @detail Test send and receive of samples with one listener on a different domain
  * @req_id FEPSDK-Sample
  */
-TEST_F(TestConnextDDSSimulationBus, SendAndReceiveSamplesMultipleDomains)
+TEST_F(TestFastDDSSimulationBus, SendAndReceiveSamplesMultipleDomains)
 {
     std::string topic = makePlatformDepName("breadcrumb");
 
@@ -110,7 +110,7 @@ TEST_F(TestConnextDDSSimulationBus, SendAndReceiveSamplesMultipleDomains)
     TearDownComponent(*sparrow_simulation_bus);
 }
 
-TEST_F(TestConnextDDSSimulationBus, SendAndReceiveSamplesMultipleSystemNames)
+TEST_F(TestFastDDSSimulationBus, SendAndReceiveSamplesMultipleSystemNames)
 {
     std::string topic = makePlatformDepName("breadcrumb");
 
