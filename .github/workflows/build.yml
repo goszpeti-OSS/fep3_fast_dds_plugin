@@ -19,14 +19,14 @@ jobs:
       matrix:
         name:
           [
-            "ubuntu-20",
-            "windows",
+            "ubuntu20",
+            "windows2019",
           ]
         include:
-          - name: "ubuntu"
+          - name: "ubuntu20"
             os: ubuntu-20.04
             profile: linux_gcc_9
-          - name: "windows"
+          - name: "windows2019"
             os: windows-2019
             profile: win_142
         
@@ -44,8 +44,7 @@ jobs:
           pip install "conan==1.59.0" --use-pep517
       - name: Build dependencies
         run: |
-          conan create thirdparty/fastdds/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
-          conan create thirdparty/fastdds-cxx/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan create thirdparty/fast_dds/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
           conan create thirdparty/dev_essential/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
           conan create thirdparty/fep3_participant/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
       - name: Build own package
