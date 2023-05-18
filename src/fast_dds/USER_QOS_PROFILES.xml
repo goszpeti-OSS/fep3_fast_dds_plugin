@@ -1,82 +1,161 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dds xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles" >
-    <profiles>
-	  <participant profile_name="fep3" is_default_profile="true">
+<profiles>
+    <participant profile_name="fep3" is_default_profile="true">
 	  <rtps>
 	  <builtin>
           <discovery_config>
             <leaseDuration>
+              <!-- late joiner feature -->
               <sec>DURATION_INFINITY</sec>
             </leaseDuration>
           </discovery_config>
         </builtin>
+	   <propertiesPolicy>
+			<properties>
+				<property>
+					<name>dds.builtin_type.octets.max_size</name>
+					<value>2147483647</value>
+					<propagate>false</propagate>
+				</property>
+			</properties>
+		</propertiesPolicy>
+		<allocation>
+			<max_partitions>256</max_partitions>
+			<max_user_data>2048</max_user_data>
+			<max_properties>512</max_properties>
+		</allocation>
+
 	  </rtps>
-	  </participant>
+	</participant>
+    <!-- KEEP_LAST  for non-strict communication -->
 
+	<topic profile_name="strict_reliable" is_default_profile="true">
+		<historyQos>
+			<kind>KEEP_ALL</kind>  
+			<depth>10</depth>
+		</historyQos>
+		<!-- <resourceLimitsQos>
+			<max_samples>10</max_samples>
+			<max_instances>2</max_instances>
+			<max_samples_per_instance>1</max_samples_per_instance>
+			<extra_samples>10</extra_samples>
+		</resourceLimitsQos> -->
+	</topic>
+    <data_writer profile_name="fep3::smalldata::writer">
+        <qos>
+            <reliability>
+                <!-- BEST_EFFORT -->
+                <kind>RELIABLE</kind>
+                <!-- <max_blocking_time>
+                    <sec>1</sec>
+                    <nanosec>856000</nanosec>
+                </max_blocking_time> -->
+            </reliability>
+            <durability>
+                <kind>VOLATILE</kind>
+            </durability>
+        </qos>
+    </data_writer>
+	<data_reader profile_name="fep3::smalldata::reader">
+		<qos>
+			<reliability>
+				<kind>RELIABLE</kind>
+			</reliability>
+			<durability>
+				<kind>VOLATILE</kind>
+			</durability>
+		</qos>
+	</data_reader>
 
-	<!--<data_reader profile_name="fep3::plain-ctype">
-		<topic>
-			<historyQos>
-				<kind>KEEP_LAST</kind>
-				<depth>10</depth>
-			</historyQos>
+	<data_writer profile_name="fep3::largedata::writer">
+		<topic>           
 			<resourceLimitsQos>
-				<max_samples>5</max_samples>
-				<max_instances>2</max_instances>
-				<max_samples_per_instance>1</max_samples_per_instance>
-				<allocated_samples>20</allocated_samples>
-				<extra_samples>10</extra_samples>
+				<max_samples>100</max_samples>
 			</resourceLimitsQos>
 		</topic>
+		<qos>
+            <publishMode>
+                <kind>ASYNCHRONOUS</kind>
+            </publishMode>
+			<reliability>
+				<kind>RELIABLE</kind>
+			</reliability>
+			<durability>
+				<kind>VOLATILE</kind>
+			</durability>
+		</qos>
+	</data_writer>
+	<data_reader profile_name="fep3::largedata::reader">
+		<topic>           
+			<resourceLimitsQos>
+				<max_samples>100</max_samples>
+			</resourceLimitsQos>
+		</topic>
+		<qos>
+			<reliability>
+				<kind>RELIABLE</kind>
+			</reliability>
+			<durability>
+				<kind>VOLATILE</kind>
+			</durability>
+		</qos>
 	</data_reader>
-	<topic profile_name="topic_profile_example">
-            <historyQos>
-                <kind>KEEP_LAST</kind>
-                <depth>20</depth>
-            </historyQos>
-            <resourceLimitsQos>
-                <max_samples>5</max_samples>
-                <max_instances>2</max_instances>
-                <max_samples_per_instance>1</max_samples_per_instance>
-                <allocated_samples>20</allocated_samples>
-                <extra_samples>10</extra_samples>
-            </resourceLimitsQos>
-        </topic>-->
-	</profiles>
+	<data_writer profile_name="fep3::stream_type::writer">
+		<qos>
+			<reliability>
+				<kind>RELIABLE</kind>
+			</reliability>
+			<durability>
+				<kind>TRANSIENT_LOCAL</kind>
+			</durability>
+		</qos>
+	</data_writer>
+	<data_reader profile_name="fep3::stream_type::reader">
+		<qos>
+			<reliability>
+				<kind>RELIABLE</kind>
+			</reliability>
+			<durability>
+				<kind>TRANSIENT_LOCAL</kind>
+			</durability>
+		</qos>
+	</data_reader>
+</profiles>
       
-<!--    <library_settings>
-        <intraprocess_delivery>USER_DATA_ONLY</intraprocess_delivery>
-    </library_settings>-->
+<library_settings>
+	<intraprocess_delivery>FULL</intraprocess_delivery>
+</library_settings>
 
-    <log>
-        <use_default>false</use_default>
+<log>
+	<use_default>false</use_default>
 
-        <consumer>
-            <class>StdoutConsumer</class>
-        </consumer>
+	<consumer>
+		<class>StdoutConsumer</class>
+	</consumer>
 
-<!--        <consumer>
-            <class>StdoutErrConsumer</class>
-            <property>
-                <name>stderr_threshold</name>
-                <value>Log::Kind::Warning</value>
-            </property>
-        </consumer>-->
+	<consumer>
+		<class>StdoutErrConsumer</class>
+		<property>
+			<name>stderr_threshold</name>
+			<value>Log::Kind::Warning</value>
+		</property>
+	</consumer>
 
-        <consumer>
-            <class>FileConsumer</class>
-            <property>
-                <name>filename</name>
-                <value>execution.log</value>
-            </property>
-            <property>
-                <name>append</name>
-                <value>TRUE</value>
-            </property>
-        </consumer>
-    </log>
+	<consumer>
+		<class>FileConsumer</class>
+		<property>
+			<name>filename</name>
+			<value>execution.log</value>
+		</property>
+		<property>
+			<name>append</name>
+			<value>TRUE</value>
+		</property>
+	</consumer>
+</log>
 
-    <types>
-     
-    </types>
+<types>
+ 
+</types>
 </dds>

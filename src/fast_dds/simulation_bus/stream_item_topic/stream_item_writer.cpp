@@ -12,17 +12,18 @@ StreamItemDataWriter::StreamItemDataWriter(const std::shared_ptr<StreamItemTopic
     : _topic(topic)
 {
     PublisherQos pqos = PUBLISHER_QOS_DEFAULT;
-    //topic->getDomainParticipant().get_publisher_qos_from_profile("fep3_pub", pqos);
+    //topic->getDomainParticipant().get_publisher_qos_from_profile(topic->getQosProfile(), pqos);
 
     // We can use the FEP system name as a partition
-    pqos.partition().clear();
-    pqos.partition().push_back(topic->getSystemName().c_str());
+    std::vector<std::string> partitions = {topic->getSystemName().c_str()};
+    pqos.partition().setNames(partitions);
 
     _publisher = topic->getDomainParticipant().create_publisher(pqos, nullptr);
 
     createWriter();
-
-    auto stw = _publisher->create_datawriter(topic->getStreamTypeTopic(), DATAWRITER_QOS_DEFAULT); // _with_profile FEP3_QOS_STREAM_TYPE
+    DataWriterQos wqos;
+    _publisher->get_datawriter_qos_from_profile(std::string(FEP3_QOS_STREAM_TYPE) + "::writer", wqos);
+    auto stw = _publisher->create_datawriter(topic->getStreamTypeTopic(), wqos);
 
     _stream_type_writer = stw; // <fep3::ddstypes::StreamType>
 }
@@ -75,15 +76,11 @@ void StreamItemDataWriter::createWriter()
     {
         _sample_writer->close();
     }
-    // TODO in xml
-    DataWriterQos wqos = DATAWRITER_QOS_DEFAULT;
-    wqos.history().kind = KEEP_ALL_HISTORY_QOS;
-    wqos.reliability().kind = RELIABLE_RELIABILITY_QOS;
-    wqos.durability().kind = VOLATILE_DURABILITY_QOS;
-    wqos.history().depth = 10;
-    auto sw = _publisher->create_datawriter(_topic->getSampleTopic(), wqos); // create_datawriter_with_profile, _topic->getQosProfile(), this, StatusMask::none());
+    DataWriterQos wqos;
+    _publisher->get_datawriter_qos_from_profile(_topic->getQosProfile() + "::writer", wqos);
+    auto sw = _publisher->create_datawriter(_topic->getSampleTopic(), wqos);
 
-    _sample_writer = sw; // <fep3::ddstypes::StreamType>
+    _sample_writer = sw;
 }
 
 fep3::Result StreamItemDataWriter::write(const IDataSample& data_sample)
@@ -132,19 +129,6 @@ fep3::Result StreamItemDataWriter::write(const IStreamType& stream_type)
 
             dds_stream_type.properties().push_back(prop);
         }
-
-        // PublicationMatchedStatus status ;
-        // _stream_type_writer->get_publication_matched_status(status);
-        // if (status.total_count == 0 ){
-        //     std::cout << "No match" << std::endl;
-
-        // }
-
-        // auto ret = _stream_type_writer->write(&dds_stream_type);
-        // if (!ret)
-        // {
-        //     std::cout << "Error while writing" << std::endl;
-        // }
 
         if (_topic->updateStreamType(stream_type))
         {

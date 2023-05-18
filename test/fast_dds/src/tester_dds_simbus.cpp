@@ -28,33 +28,33 @@
  */
 TEST_F(ReaderWriterTestClass, SendAndReceiveSample)
 {
-   test::helper::Notification all_items_received;
-   const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
+  test::helper::Notification all_items_received;
+  const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
 
-   uint32_t test_sample_value = 6;
-   const data_read_ptr<const IDataSample> test_sample = std::make_shared<fep3::base::DataSampleType<uint32_t>>(test_sample_value);
+  uint32_t test_sample_value = 6;
+  const data_read_ptr<const IDataSample> test_sample = std::make_shared<fep3::base::DataSampleType<uint32_t>>(test_sample_value);
 
-   { // setting of expectations
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
-           // DataSampleType currently doesn't handle timestamp and counter correctly (see FEPSDK-2668)
-           // thus we only check the value -> DataSampleSmartPtr*Value*Matcher
-           // TODO change to use DataSampleSmartPtrMatcher once FEPSDK-2668 is resolved
-           (fep3::mock::DataSampleSmartPtrValueMatcher(test_sample)))).WillOnce(Notify(&all_items_received));
-       // ignore stream types
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
-           (::testing::_))).WillRepeatedly(::testing::Return());
-   }
+  { // setting of expectations
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
+          // DataSampleType currently doesn't handle timestamp and counter correctly (see FEPSDK-2668)
+          // thus we only check the value -> DataSampleSmartPtr*Value*Matcher
+          // TODO change to use DataSampleSmartPtrMatcher once FEPSDK-2668 is resolved
+          (fep3::mock::DataSampleSmartPtrValueMatcher(test_sample)))).WillOnce(Notify(&all_items_received));
+      // ignore stream types
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
+          (::testing::_))).WillRepeatedly(::testing::Return());
+  }
 
-   _reader->reset(mock_receiver);
+  _reader->reset(mock_receiver);
 
-   startReception(getSimulationBus());
-   for (int i = 0; i < 10; i++) {
-       _writer->write(*test_sample.get());
-       _writer->transmit();
-       std::this_thread::sleep_for(std::chrono::milliseconds(20));
-   }
-   EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
-   stopReception(getSimulationBus());
+  startReception(getSimulationBus());
+  for (int i = 0; i < 10; i++) {
+      _writer->write(*test_sample.get());
+      _writer->transmit();
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  }
+  EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
+  stopReception(getSimulationBus());
 }
 
 
@@ -64,28 +64,28 @@ TEST_F(ReaderWriterTestClass, SendAndReceiveSample)
 */
 TEST_F(ReaderWriterTestClass, SendAndReceiveStreamType)
 {
-   test::helper::Notification all_items_received;
-   const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
+  test::helper::Notification all_items_received;
+  const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
 
-   const data_read_ptr<const IStreamType> test_stream_type = std::make_shared<base::StreamTypeDDL>("tStruct", "ddl_description");
+  const data_read_ptr<const IStreamType> test_stream_type = std::make_shared<base::StreamTypeDDL>("tStruct", "ddl_description");
 
-   { // setting of expectations
-       // ignore the initial stream type
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
-           (::testing::_))).WillOnce(::testing::Return());
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
-           (fep3::mock::StreamTypeSmartPtrMatcher(test_stream_type))))
-           .WillOnce(Notify(&all_items_received)) // stream type as sent by transmitter
-           ;
-   }
+  { // setting of expectations
+      // ignore the initial stream type
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
+          (::testing::_))).WillOnce(::testing::Return());
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
+          (fep3::mock::StreamTypeSmartPtrMatcher(test_stream_type))))
+          .WillOnce(Notify(&all_items_received)) // stream type as sent by transmitter
+          ;
+  }
 
-   _reader->reset(mock_receiver);
+  _reader->reset(mock_receiver);
 
-   startReception(getSimulationBus());
-   _writer->write(*test_stream_type.get());
-   _writer->transmit();
-   EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
-   stopReception(getSimulationBus());
+  startReception(getSimulationBus());
+  _writer->write(*test_stream_type.get());
+  _writer->transmit();
+  EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
+  stopReception(getSimulationBus());
 }
 
 
@@ -96,47 +96,47 @@ TEST_F(ReaderWriterTestClass, SendAndReceiveStreamType)
 */
 TEST_F(ReaderWriterTestClass, ChangeStreamType)
 {
-   test::helper::Notification all_items_received;
-   const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
+  test::helper::Notification all_items_received;
+  const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
 
-   uint8_t test_sample_value_1 = 6;
-   const data_read_ptr<const IDataSample> test_sample_1 = std::make_shared<fep3::base::DataSampleType<uint8_t>>(test_sample_value_1);
+  uint8_t test_sample_value_1 = 6;
+  const data_read_ptr<const IDataSample> test_sample_1 = std::make_shared<fep3::base::DataSampleType<uint8_t>>(test_sample_value_1);
 
-   const data_read_ptr<const IStreamType> test_stream_type = std::make_shared<base::StreamTypePlain<uint64_t>>();
+  const data_read_ptr<const IStreamType> test_stream_type = std::make_shared<base::StreamTypePlain<uint64_t>>();
 
-   uint64_t test_sample_value_2 = 600000000;
-   const data_read_ptr<const IDataSample> test_sample_2 = std::make_shared<fep3::base::DataSampleType<uint64_t>>(test_sample_value_2);
+  uint64_t test_sample_value_2 = 600000000;
+  const data_read_ptr<const IDataSample> test_sample_2 = std::make_shared<fep3::base::DataSampleType<uint64_t>>(test_sample_value_2);
 
-   { // setting of expectations
-       ::testing::InSequence sequence;
-       // ignore the initial stream type
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
-           (::testing::_))).WillOnce(::testing::Return());
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
-           // DataSampleType currently doesn't handle timestamp and counter correctly (see FEPSDK-2668)
-           // thus we only check the value -> DataSampleSmartPtr*Value*Matcher
-           // TODO change to use DataSampleSmartPtrMatcher once FEPSDK-2668 is resolved
-           (fep3::mock::DataSampleSmartPtrValueMatcher(test_sample_1)))).WillOnce(::testing::Return());
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
-           (fep3::mock::StreamTypeSmartPtrMatcher(test_stream_type))))
-           .WillOnce(::testing::Return()) // stream type as sent by transmitter
-           ;
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
-           // DataSampleType currently doesn't handle timestamp and counter correctly (see FEPSDK-2668)
-           // thus we only check the value -> DataSampleSmartPtr*Value*Matcher
-           // TODO change to use DataSampleSmartPtrMatcher once FEPSDK-2668 is resolved
-           (fep3::mock::DataSampleSmartPtrValueMatcher(test_sample_2)))).WillOnce(Notify(&all_items_received));
-   }
+  { // setting of expectations
+      ::testing::InSequence sequence;
+      // ignore the initial stream type
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
+          (::testing::_))).WillOnce(::testing::Return());
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
+          // DataSampleType currently doesn't handle timestamp and counter correctly (see FEPSDK-2668)
+          // thus we only check the value -> DataSampleSmartPtr*Value*Matcher
+          // TODO change to use DataSampleSmartPtrMatcher once FEPSDK-2668 is resolved
+          (fep3::mock::DataSampleSmartPtrValueMatcher(test_sample_1)))).WillOnce(::testing::Return());
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
+          (fep3::mock::StreamTypeSmartPtrMatcher(test_stream_type))))
+          .WillOnce(::testing::Return()) // stream type as sent by transmitter
+          ;
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
+          // DataSampleType currently doesn't handle timestamp and counter correctly (see FEPSDK-2668)
+          // thus we only check the value -> DataSampleSmartPtr*Value*Matcher
+          // TODO change to use DataSampleSmartPtrMatcher once FEPSDK-2668 is resolved
+          (fep3::mock::DataSampleSmartPtrValueMatcher(test_sample_2)))).WillOnce(Notify(&all_items_received));
+  }
 
-   _reader->reset(mock_receiver);
+  _reader->reset(mock_receiver);
 
-   startReception(getSimulationBus());
-   _writer->write(*test_sample_1.get());
-   _writer->write(*test_stream_type.get());
-   _writer->write(*test_sample_2.get());
-   _writer->transmit();
-   EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
-   stopReception(getSimulationBus());
+  startReception(getSimulationBus());
+  _writer->write(*test_sample_1.get());
+  _writer->write(*test_stream_type.get());
+  _writer->write(*test_sample_2.get());
+  _writer->transmit();
+  EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
+  stopReception(getSimulationBus());
 }
 
 
@@ -146,28 +146,28 @@ TEST_F(ReaderWriterTestClass, ChangeStreamType)
 */
 TEST_F(ReaderWriterTestClass, SampleTimestamp)
 {
-   test::helper::Notification all_items_received;
-   const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
+  test::helper::Notification all_items_received;
+  const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
 
-   uint32_t test_sample_value = 6;
-   const data_read_ptr<const IDataSample> test_sample = std::make_shared<TimeDataSampleType<uint32_t>>
-       (test_sample_value, Timestamp(3));
+  uint32_t test_sample_value = 6;
+  const data_read_ptr<const IDataSample> test_sample = std::make_shared<TimeDataSampleType<uint32_t>>
+      (test_sample_value, Timestamp(3));
 
-   { // setting of expectations
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
-           (fep3::mock::DataSampleSmartPtrTimestampAndValueMatcher(test_sample)))).WillOnce(Notify(&all_items_received));
-       // ignore stream types
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
-           (::testing::_))).WillRepeatedly(::testing::Return());
-   }
+  { // setting of expectations
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
+          (fep3::mock::DataSampleSmartPtrTimestampAndValueMatcher(test_sample)))).WillOnce(Notify(&all_items_received));
+      // ignore stream types
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
+          (::testing::_))).WillRepeatedly(::testing::Return());
+  }
 
-   _reader->reset(mock_receiver);
+  _reader->reset(mock_receiver);
 
-   startReception(getSimulationBus());
-   _writer->write(*test_sample.get());
-   _writer->transmit();
-   EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
-   stopReception(getSimulationBus());
+  startReception(getSimulationBus());
+  _writer->write(*test_sample.get());
+  _writer->transmit();
+  EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
+  stopReception(getSimulationBus());
 }
 
 /**
@@ -176,39 +176,39 @@ TEST_F(ReaderWriterTestClass, SampleTimestamp)
 */
 TEST_F(ReaderWriterTestClass, getFrontTime)
 {
-   startReception(getSimulationBus());
+  startReception(getSimulationBus());
 
-   uint32_t value = 6;
-   _writer->write(TimeDataSampleType<uint32_t>(value, Timestamp(3)));
-   _writer->transmit();
+  uint32_t value = 6;
+  _writer->write(TimeDataSampleType<uint32_t>(value, Timestamp(3)));
+  _writer->transmit();
 
-   std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-   // Pop stream_type
-   CountSampleTestReceiver receiver;
-   _reader->pop(receiver);
+  // Pop stream_type
+  CountSampleTestReceiver receiver;
+  _reader->pop(receiver);
 
-   // Now pop the real sample
-   EXPECT_EQ(_reader->getFrontTime().value_or(Timestamp(0)), Timestamp(3));
+  // Now pop the real sample
+  EXPECT_EQ(_reader->getFrontTime().value_or(Timestamp(0)), Timestamp(3));
 
-   TestReceiver sample_receiver;
-   _reader->pop(sample_receiver);
+  TestReceiver sample_receiver;
+  _reader->pop(sample_receiver);
 
-   ASSERT_EQ(sample_receiver._samples.size(), 1);
-   EXPECT_EQ(sample_receiver._samples.at(0)->getTime(), Timestamp(3));
+  ASSERT_EQ(sample_receiver._samples.size(), 1);
+  EXPECT_EQ(sample_receiver._samples.at(0)->getTime(), Timestamp(3));
 }
 
 MATCHER_P(DataSampleSmartPtrCounterMatcher, pointer_to_expected_counter, "Matcher for counter of smart pointer to IDataSample")
 {
-   return arg->getCounter() == *pointer_to_expected_counter;
+  return arg->getCounter() == *pointer_to_expected_counter;
 }
 ACTION_P(AssignDataSampleSmartPtrCounter, pointer_to_destination)
 {
-   *pointer_to_destination = arg0->getCounter();
+  *pointer_to_destination = arg0->getCounter();
 }
 ACTION_P(Increment, pointer_to_value)
 {
-   (*pointer_to_value)++;
+  (*pointer_to_value)++;
 }
 
 /**
@@ -217,43 +217,43 @@ ACTION_P(Increment, pointer_to_value)
 */
 TEST_F(ReaderWriterTestClass, SampleCounter)
 {
-   test::helper::Notification all_items_received;
-   const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
+  test::helper::Notification all_items_received;
+  const auto& mock_receiver = std::make_shared<::testing::StrictMock<fep3::mock::DataReceiver>>();
 
-   uint32_t test_sample_value_1 = 6;
-   const data_read_ptr<const IDataSample> test_sample_1 = std::make_shared<fep3::base::DataSampleType<uint32_t>>(test_sample_value_1);
-   uint32_t test_sample_value_2 = 7;
-   const data_read_ptr<const IDataSample> test_sample_2 = std::make_shared<fep3::base::DataSampleType<uint32_t>>(test_sample_value_2);
-   uint32_t test_sample_value_3 = 8;
-   const data_read_ptr<const IDataSample> test_sample_3 = std::make_shared<fep3::base::DataSampleType<uint32_t>>(test_sample_value_3);
+  uint32_t test_sample_value_1 = 6;
+  const data_read_ptr<const IDataSample> test_sample_1 = std::make_shared<fep3::base::DataSampleType<uint32_t>>(test_sample_value_1);
+  uint32_t test_sample_value_2 = 7;
+  const data_read_ptr<const IDataSample> test_sample_2 = std::make_shared<fep3::base::DataSampleType<uint32_t>>(test_sample_value_2);
+  uint32_t test_sample_value_3 = 8;
+  const data_read_ptr<const IDataSample> test_sample_3 = std::make_shared<fep3::base::DataSampleType<uint32_t>>(test_sample_value_3);
 
-   uint32_t reference_counter = 0;
+  uint32_t reference_counter = 0;
 
-   { // setting of expectations
-       ::testing::InSequence sequence;
-       // ignore initial stream type
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
-           (::testing::_))).WillOnce(::testing::Return());
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
-           (fep3::mock::DataSampleSmartPtrValueMatcher(test_sample_1))))
-           .WillOnce(::testing::DoAll(AssignDataSampleSmartPtrCounter(&reference_counter), Increment(&reference_counter))) // first sample sets the reference_counter
-           ;
-       EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
-           (DataSampleSmartPtrCounterMatcher(&reference_counter))))
-           .WillOnce(Increment(&reference_counter))
-           .WillOnce(Notify(&all_items_received))
-           ;
-   }
+  { // setting of expectations
+      ::testing::InSequence sequence;
+      // ignore initial stream type
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IStreamType>&>
+          (::testing::_))).WillOnce(::testing::Return());
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
+          (fep3::mock::DataSampleSmartPtrValueMatcher(test_sample_1))))
+          .WillOnce(::testing::DoAll(AssignDataSampleSmartPtrCounter(&reference_counter), Increment(&reference_counter))) // first sample sets the reference_counter
+          ;
+      EXPECT_CALL(*mock_receiver.get(), call(::testing::Matcher<const data_read_ptr<const IDataSample>&>
+          (DataSampleSmartPtrCounterMatcher(&reference_counter))))
+          .WillOnce(Increment(&reference_counter))
+          .WillOnce(Notify(&all_items_received))
+          ;
+  }
 
-   _reader->reset(mock_receiver);
+  _reader->reset(mock_receiver);
 
-   startReception(getSimulationBus());
-   _writer->write(*test_sample_1.get());
-   _writer->write(*test_sample_2.get());
-   _writer->write(*test_sample_3.get());
-   _writer->transmit();
-   EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
-   stopReception(getSimulationBus());
+  startReception(getSimulationBus());
+  _writer->write(*test_sample_1.get());
+  _writer->write(*test_sample_2.get());
+  _writer->write(*test_sample_3.get());
+  _writer->transmit();
+  EXPECT_TRUE(all_items_received.waitForNotificationWithTimeout(std::chrono::seconds(5)));
+  stopReception(getSimulationBus());
 }
 
 

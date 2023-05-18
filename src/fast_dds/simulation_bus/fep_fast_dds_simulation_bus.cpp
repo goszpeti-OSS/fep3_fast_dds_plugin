@@ -179,8 +179,7 @@ public:
                                 data_access_iterator->_item_queue->createSampleReadCondition(
                                     data_access_iterator->_receiver);
                             waitset->attach_condition(*condition);
-                            waitset->attach_condition(
-                                *data_access_iterator->_item_queue->createStreamTypeReadCondition(
+                            waitset->attach_condition(*data_access_iterator->_item_queue->createStreamTypeReadCondition(
                                     data_access_iterator->_receiver));
 
                             data_access_iterator->_item_queue->setRecreateWaitSetCondition(
@@ -336,8 +335,7 @@ fep3::Result FastDDSSimulationBus::initialize()
         qos_file_beside_the_binary = getFilePath().append("USER_QOS_PROFILES.xml");
         a_util::filesystem::readTextFile(qos_file_beside_the_binary, qos_profile_content);
     }
-    if (ReturnCode_t::RETCODE_OK ==
-        DomainParticipantFactory::get_instance()->load_XML_profiles_file(
+    if (ReturnCode_t::RETCODE_OK == DomainParticipantFactory::get_instance()->load_XML_profiles_file(
             qos_file_beside_the_binary.toString())) {
         DomainParticipantQos dqos;
         auto ret = DomainParticipantFactory::get_instance()->get_participant_qos_from_profile(
@@ -401,9 +399,6 @@ fep3::Result FastDDSSimulationBus::initialize()
                 eprosima::fastdds::dds::TypeSupport type_prop(
                     new fep3::ddstypes::PropertyPubSubType());
                 type_prop.register_type(participant);
-                // TODO: there are no domain tags in fast dds, but publisher and subscriber
-                // partitions, which seem to do the same
-                //
                 _impl->_bus_info->registerParticipant(*_impl->_participant);
             }
             catch (const std::exception& ex) {
@@ -418,6 +413,13 @@ fep3::Result FastDDSSimulationBus::initialize()
 #endif
         }
         _impl->createDataAccessCollection();
+    }
+    else {
+        RETURN_ERROR_DESCRIPTION(fep3::ERR_INVALID_FILE,
+                "Error while reading USER_QOS_PROFILES.xml. \n"
+                "Please make sure the file is valid against"
+                "https:// github.com/eProsima/Fast-DDS/blob/master/resources/xsd/fastRTPS_profiles.xsd"
+             );
     }
     return {};
 }

@@ -34,30 +34,17 @@ ReaderItemQueue::ReaderItemQueue(const std::shared_ptr<fep3::ILogger>& logger,
                                  const std::shared_ptr<StreamItemTopic>& topic)
     : _logger(logger), _topic(topic)
 {
-    //     , _subscriber(topic->getDomainParticipant(),
-    //     topic->getQosProvider()->subscriber_qos(FEP3_QOS_PARTICIPANT))
+    // TODO: should be included in datareader profile
     SubscriberQos sqos = SUBSCRIBER_QOS_DEFAULT;
-    // topic->getDomainParticipant().get_subscriber_qos_from_profile("fep3_pub", pqos);
-
     // We can use the FEP system name as a partition
     sqos.partition().clear();
     sqos.partition().push_back(topic->getSystemName().c_str());
-
     _subscriber = topic->getDomainParticipant().create_subscriber(sqos, nullptr);
-    // const auto qos = topic->getQosProvider()->datareader_qos(topic->getQosProfile());
-    /*
-    @TODO make use of capacity limit
-    if (queue_capacity > 0)
-    {
-        qos->resource_limits->max_samples(static_cast<int32_t>(queue_capacity));
-    }*/
 
     createReader();
-    auto str = _subscriber->create_datareader(
-        topic->getStreamTypeTopic(),
-        DATAREADER_QOS_DEFAULT); // _with_profile FEP3_QOS_STREAM_TYPE);
-
-    _streamtype_reader = str; // <fep3::ddstypes::StreamType>
+    DataReaderQos rqos;
+    _subscriber->get_datareader_qos_from_profile(std::string(FEP3_QOS_STREAM_TYPE) + "::reader", rqos);
+    _streamtype_reader = _subscriber->create_datareader(topic->getStreamTypeTopic(), rqos);
 }
 
 ReaderItemQueue::~ReaderItemQueue()
@@ -80,21 +67,17 @@ void ReaderItemQueue::createReader()
         // Now we need to close the old reader
         _sample_reader->close();
     }
-    // auto sw = _publisher->create_datawriter_with_profile(_topic->getSampleTopic(),
-    // _topic->getQosProfile(), this, StatusMask::none());
-
     // at this point we are overriding the existing reader, but it will not be deleted
     // because it's still part of the ReadCondition. But we are not affected from the old
     // reader because we have closed him.
-    DataReaderQos rtqos = DATAREADER_QOS_DEFAULT;
-    rtqos.history().kind = KEEP_ALL_HISTORY_QOS;
-    rtqos.reliability().kind = RELIABLE_RELIABILITY_QOS;
-    rtqos.durability().kind = VOLATILE_DURABILITY_QOS;
-    auto sr = _subscriber->create_datareader(
-        _topic->getSampleTopic(),
-        rtqos); // _with_profile _topic->getQosProfile(), this, StatusMask::none());
 
-    _sample_reader = sr; // <fep3::ddstypes::StreamType>
+    DataReaderQos rqos;
+    /*if (queue_capacity > 0) {
+        rqos.resource_limits()
+            .max_samples(static_cast<int32_t>(queue_capacity))
+    }*/
+    _subscriber->get_datareader_qos_from_profile(_topic->getQosProfile() + "::reader", rqos);
+    _sample_reader = _subscriber->create_datareader(_topic->getSampleTopic(), rqos);
 }
 
 void ReaderItemQueue::setRecreateWaitSetCondition(
@@ -154,6 +137,7 @@ bool ReaderItemQueue::popFrom(DataReader& sample_reader,
     bool read_something = false;
     if (sample_reader.is_enabled()) {
         // TODO: no coherent access available?
+        _subscriber->begin_access();
         LoanableSequence<fep3::ddstypes::BusData> samples;
         LoanableSequence<SampleInfo> sample_info;
         if (ReturnCode_t::RETCODE_OK == _sample_reader->take_next_instance(samples, sample_info)) {
@@ -191,6 +175,7 @@ bool ReaderItemQueue::popFrom(DataReader& sample_reader,
             }
             _streamtype_reader->return_loan(samples, sample_info);
         }
+        _subscriber->end_access();
     }
     return read_something;
 }
@@ -256,6 +241,8 @@ fep3::Optional<fep3::Timestamp> ReaderItemQueue::getFrontTime() const
 ReadCondition* ReaderItemQueue::createSampleReadCondition(
     const std::shared_ptr<fep3::ISimulationBus::IDataReceiver>& receiver)
 {
+    // using new view state does not seem to emit the condition, when the same value is read as before
+    // - but then FEP receives no new value
     auto condition = _sample_reader->create_readcondition(
         ANY_SAMPLE_STATE, ANY_VIEW_STATE, ALIVE_INSTANCE_STATE);
     return condition;

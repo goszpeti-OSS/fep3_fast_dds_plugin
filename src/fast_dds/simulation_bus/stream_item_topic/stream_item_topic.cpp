@@ -22,8 +22,9 @@ StreamItemTopic::StreamItemTopic(eprosima::fastdds::dds::DomainParticipant& part
     {
         logger->logDebug(a_util::strings::format("Using qos profile '%s' for topic '%s'.", _qos_profile.c_str(), _topic_name.c_str()));
     }
-    // TODO Check nullptr 
-    auto topic = _participant.create_topic(topic_name, "fep3::ddstypes::BusData", TOPIC_QOS_DEFAULT);
+    TopicQos tqos;
+    participant.get_topic_qos_from_profile("strict_reliable", tqos);
+    auto topic = _participant.create_topic(topic_name, "fep3::ddstypes::BusData", tqos);
     _sample_topic = topic;
     _stream_type_topic = _participant.create_topic(topic_name + "_stream_type", "fep3::ddstypes::StreamType", TOPIC_QOS_DEFAULT);
 }
@@ -96,13 +97,14 @@ std::string StreamItemTopic::findQosProfile(const fep3::IStreamType& stream_type
                     , big_qos_profile_name.c_str()));
             }
 
-            return std::string("fep3::") + big_qos_profile_name;
+            return std::string("fep3::largedata"); //+ big_qos_profile_name;
         }
     }
 
     if (containsProfile(qos_profile_name))
     {
-        return std::string("fep3::") + qos_profile_name;
+        return "fep3::smalldata";
+       // return std::string("fep3::") + qos_profile_name;
     }
     else
     {

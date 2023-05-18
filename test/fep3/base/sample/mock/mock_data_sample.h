@@ -120,11 +120,24 @@ bool haveEqualValue(const ::fep3::IDataSample& lhs, const ::fep3::IDataSample& r
     auto lhs_read_bytes = lhs.read(data_sample_raw_memory);
     FixedSizeRawMemory other_data_sample_raw_memory(rhs.getSize());
     auto rhs_read_bytes = rhs.read(other_data_sample_raw_memory);
-    return
-        lhs.getSize() == rhs.getSize()
-        && lhs_read_bytes == rhs_read_bytes
-        && data_sample_raw_memory.value() == other_data_sample_raw_memory.value()
-        ;
+    auto size_eq = lhs.getSize() == rhs.getSize();
+    auto read_bytes_eq = lhs_read_bytes == rhs_read_bytes;
+    auto value_eq =   data_sample_raw_memory.value() == other_data_sample_raw_memory.value();
+    std::cout << "Mismatch between content:" << std::endl;
+    // if (!value_eq) {
+    //     std::cout << "Sample1:" << std::endl;
+    //     for (auto i: data_sample_raw_memory.value()) {
+    //         std::cout << i << ' ';
+    //     }
+    //     std::cout << std::endl;
+    //     std::cout << "Sample2:" << std::endl;
+
+    //    for (auto i: data_sample_raw_memory.value()) {
+    //         std::cout << i << ' ';
+    //     }
+    //     std::cout << std::endl;
+    // }
+    return size_eq && read_bytes_eq && value_eq;
 }
 MATCHER_P(DataSampleSmartPtrValueMatcher, other, "Value equality matcher for smart pointer to IDataSample")
 {
