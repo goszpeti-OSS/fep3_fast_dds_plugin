@@ -1,5 +1,5 @@
 <a href="http://www.eprosima.com"><img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSd0PDlVz1U_7MgdTe0FRIWD0Jc9_YH-gGi0ZpLkr-qgCI6ZEoJZ5GBqQ" hspace="8" vspace="2" width="100" height="100" ></a>
-<a href="http://www.eprosima.com"><img src="https://raw.githubusercontent.com/cariad-tech/fep3_sdk/main/doc/images/fep_logo_white.png" align="left" hspace="8" vspace="2" width="100" height="100" ></a>
+<a href="https://github.com/cariad-tech"><img src="https://raw.githubusercontent.com/cariad-tech/fep3_sdk/main/doc/images/fep_logo_white.ico" align="left" hspace="8" vspace="2" width="100" height="100" ></a>
 
 # FEP3 eProsima Fast DDS Simulation Bus Plugin
 
