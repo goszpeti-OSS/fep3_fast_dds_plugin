@@ -42,22 +42,57 @@ jobs:
       - name: Install specific Conan version
         run: | # markupsafe is a workaround fix for broken conan dependencies
           pip install "conan==1.59.0" --use-pep517
-      - name: Build dependencies
+      - name: Add remote
         run: |
-          conan create thirdparty/fast_dds/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
-          conan create thirdparty/dev_essential/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
-          conan create thirdparty/fep3_participant/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+            conan remote add oss-internal http://goszpeti.dynv6.net:8081/artifactory/api/conan/oss-conan-internal false
+            conan user ${{secrets.OSS_ARTIFACTORY_USER}} -r oss-internal -p ${{secrets.OSS_ARTIFACTORY_PW}}
       - name: Build own package
         run: |
-            conan install . -pr build_profiles/${{ matrix.profile}} -if build
+            conan install . _/_ -pr build_profiles/${{ matrix.profile}} -if build
             conan build . -if build -bf build
-      # TODO: build the rest of fep
-      # conan create thirdparty/fep3_system/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
-      # conan create thirdparty/fep3_base_utilities/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
-      # conan create thirdparty/fep3_sdk/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+            conan export-pkg . _/_ -if build -bf build
       - name: Upload binaries
         uses: actions/upload-artifact@v3
         with:
           name: fep3_fast_dds_plugin_${{matrix.profile}}
           path: |
             build/package
+      - name: Upload conan package
+        run: |
+            conan upload fep3_fast_dds_plugin* -r=oss-internal --force --all -c
+
+  # build:
+  #     runs-on: runs-on: [self-hosted, Linux, X64]
+  #     timeout-minutes: 90
+  #     env:
+  #       LC_ALL: "en_US.UTF-8"
+  #       CONAN_REVISIONS_ENABLED: 1
+  #     steps:
+  #       - uses: actions/checkout@v3
+  #       - name: Set up Python
+  #         uses: actions/setup-python@v4
+  #         with:
+  #           python-version: 3.11
+  #       - name: Prepare system - docker
+  #         run: | # markupsafe is a workaround fix for broken conan dependencies
+  #           pip install "conan==1.59.0" --use-pep517
+  #       - name: Build dependencies
+  #         run: |
+  #           conan create thirdparty/fast_dds/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+  #           conan create thirdparty/dev_essential/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+  #           conan create thirdparty/fep3_participant/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+  #       - name: Build own package
+  #         run: |
+  #             conan install . -pr build_profiles/${{ matrix.profile}} -if build
+  #             conan build . -if build -bf build
+  #       # TODO: build the rest of fep
+  #       # conan create thirdparty/fep3_system/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+  #       # conan create thirdparty/fep3_base_utilities/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+  #       # conan create thirdparty/fep3_sdk/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+  #       - name: Upload binaries
+  #         uses: actions/upload-artifact@v3
+  #         with:
+  #           name: fep3_fast_dds_plugin_${{matrix.profile}}
+  #           path: |
+  #             build/package
+
