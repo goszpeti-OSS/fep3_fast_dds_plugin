@@ -47,11 +47,11 @@ jobs:
           pip install "conan==1.59.0" --use-pep517
       - name: Add remote
         run: |
-            conan remote add oss-internal ${{ vars.ARTIFACTORY_API_URL }}oss-conan-internal true
+            conan remote add oss-internal ${{ vars.ARTIFACTORY_API_URL }}oss-conan-internal false
       - name: Log in to remote
         run: |
             conan remote list
-            conan user ${{ secrets.OSS_ARTIFACTORY_USER }} -r oss-internal -p
+            conan user -p ${{ secrets.OSS_ARTIFACTORY_PW }} -r oss-internal ${{ secrets.OSS_ARTIFACTORY_USER }} 
       - name: Build own package
         run: |
             conan install . _/_ -pr build_profiles/${{ matrix.profile}} -if build
