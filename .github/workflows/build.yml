@@ -32,7 +32,10 @@ jobs:
         
     env:
       LC_ALL: "en_US.UTF-8"
-      CONAN_REVISIONS_ENABLED: 1
+      CONAN_REVISIONS_ENABLED: "1"
+      CONAN_NON_INTERACTIVE: "1"
+      CONAN_LOGIN_USERNAME: ${{ secrets.OSS_ARTIFACTORY_USER }}
+      CONAN_PASSWORD: ${{ secrets.OSS_ARTIFACTORY_PW }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -44,8 +47,11 @@ jobs:
           pip install "conan==1.59.0" --use-pep517
       - name: Add remote
         run: |
-            conan remote add oss-internal http://goszpeti.dynv6.net:8081/artifactory/api/conan/oss-conan-internal false
-            conan user ${{secrets.OSS_ARTIFACTORY_USER}} -r oss-internal -p ${{secrets.OSS_ARTIFACTORY_PW}}
+            conan remote add oss-internal ${{ vars.ARTIFACTORY_API_URL }}oss-conan-internal true
+      - name: Log in to remote
+        run: |
+            conan remote list
+            conan user ${{ secrets.OSS_ARTIFACTORY_USER }} -r oss-internal -p
       - name: Build own package
         run: |
             conan install . _/_ -pr build_profiles/${{ matrix.profile}} -if build
