@@ -569,7 +569,7 @@ void(FastDDSSimulationBus::logError)(const fep3::Result& res)
 }
 
 FastDDSSimulationBus::FastDDSSimulationBusConfiguration::FastDDSSimulationBusConfiguration()
-    : Configuration("rti_dds_simulation_bus")
+    : Configuration("fast_dds_simulation_bus")
 {
 }
 

@@ -89,5 +89,7 @@ install(EXPORT ${PLUGIN_NAME}_targets DESTINATION lib/cmake)
 install(FILES 
         fep3_participant.fep_components
         fep3-fast-plugin-macros.cmake
+        USER_QOS_PROFILES.xml
+        USER_QOS_PROFILES_FULL.xml
         DESTINATION lib
 )
