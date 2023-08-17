@@ -1,0 +1,14 @@
+[settings]
+os=Linux
+arch=x86_64
+compiler=gcc
+compiler.version=10
+compiler.libcxx=libstdc++11
+&:build_type=RelWithDebInfo
+fep*:build_type=RelWithDebInfo
+dev_essential*:build_type=RelWithDebInfo
+*:build_type=Release
+[options]
+
+[env]
+CONAN_DISABLE_STRICT_MODE=1 
