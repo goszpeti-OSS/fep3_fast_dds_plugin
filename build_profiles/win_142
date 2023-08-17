@@ -4,9 +4,9 @@ arch=x86_64
 compiler=Visual Studio
 compiler.version=16
 compiler.toolset=v142
-&:build_type=RelWithDebinfo
-fep*:build_type=RelWithDebinfo
-dev_essential*:build_type=RelWithDebinfo
+&:build_type=RelWithDebInfo
+fep*:build_type=RelWithDebInfo
+dev_essential*:build_type=RelWithDebInfo
 *:build_type=Release
 [options]
 
