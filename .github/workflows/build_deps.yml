@@ -47,7 +47,7 @@ jobs:
           conan create thirdparty/dev_essential/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
       - name: Upload conan packages
         run: |
-            conan upload "*" -r=fep3_oss --force --all --confirm --no-overwrite
+            conan upload "dev_essential*" -r=fep3_oss --all --confirm --force
 
           # conan create thirdparty/fast_dds/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
           # conan create thirdparty/fep3_participant/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
