@@ -18,7 +18,7 @@ jobs:
         include:
           - name: "ubuntu20"
             os: ubuntu-20.04
-            profile: linux_gcc_9
+            profile: linux_gcc_10
           - name: "windows2019"
             os: windows-2019
             profile: win_142
@@ -48,7 +48,8 @@ jobs:
       - name: Upload conan packages
         run: |
             conan upload "dev_essential*" -r=fep3_oss --all --confirm --force
-            conan upload "fep*" -r=fep3_oss --all --confirm --force
+          
+          # conan upload "fep*" -r=fep3_oss --all --confirm --force
 
           # conan create thirdparty/fast_dds/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
           # conan create thirdparty/fep3_participant/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
