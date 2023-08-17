@@ -1,0 +1,55 @@
+name: Build Dependencies
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+
+    strategy:
+      matrix:
+        name:
+          [
+            "ubuntu20",
+            "windows2019",
+          ]
+        include:
+          - name: "ubuntu20"
+            os: ubuntu-20.04
+            profile: linux_gcc_9
+          - name: "windows2019"
+            os: windows-2019
+            profile: win_142
+        
+    env:
+      LC_ALL: "en_US.UTF-8"
+      CONAN_REVISIONS_ENABLED: "1"
+      CONAN_NON_INTERACTIVE: "1"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install specific Conan version
+        run: | # markupsafe is a workaround fix for broken conan dependencies
+          pip install "conan==1.59.0" --use-pep517
+      - name: Add remote
+        run: |
+            conan remote add fep3_oss ${{ vars.FEP3_GITLAB_URL }} false
+      - name: Log in to remote
+        run: |
+            conan user -p ${{ secrets.GITLAB_FEP3_PW }} -r fep3_oss ${{ secrets.GITLAB_FEP3_USERNAME }}W
+      - name: Build dependencies
+        run: |
+          conan create thirdparty/fast_dds/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan create thirdparty/dev_essential/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan create thirdparty/fep3_participant/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan create thirdparty/fep3_system/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan create thirdparty/fep3_base_utilities/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan create thirdparty/fep3_sdk/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+      - name: Upload conan packages
+        run: |
+            conan upload * -r=fep3_oss --force --all --confirm --no-overwrite
