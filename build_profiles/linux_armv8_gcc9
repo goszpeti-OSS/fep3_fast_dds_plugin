@@ -4,7 +4,10 @@ arch=armv8
 compiler=gcc
 compiler.version=9
 compiler.libcxx=libstdc++11
-build_type=Release
+&:build_type=RelWithDebinfo
+fep*:build_type=RelWithDebinfo
+dev_essential*:build_type=RelWithDebinfo
+*:build_type=Release
 [options]
 
 [env]

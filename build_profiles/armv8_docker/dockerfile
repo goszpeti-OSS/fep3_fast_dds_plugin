@@ -1,4 +1,4 @@
-# docker build --progress=plain . -t fep3fastddsplugin:latest -f ./build_profiles/armv8_docker/dockerfile 
+# docker build --progress=plain . -t armv8_build:latest -f ./build_profiles/armv8_docker/dockerfile 
 # sudo apt-get install qemu binfmt-support qemu-user-static # Install the qemu packages
 # docker run --rm --privileged multiarch/qemu-user-static --reset -p yes # This step will execute the registering scripts
 # sudo docker run  -i --platform linux/arm64  --rm -t fep3fastddsplugin:latest /bin/bash
@@ -18,8 +18,15 @@ RUN chmod +x ./cmake-3.26.3-linux-aarch64.sh
 RUN ./cmake-3.26.3-linux-aarch64.sh  --skip-license 
 ENV PATH "$PATH:/root/bin"
 
+RUN conan remote clean
+RUN conan remote add local http://host.docker.internal:9300 false
+RUN conan user demo -r local -p demo
+RUN conan config set general.revisions_enabled=True
+
 COPY ./ /root/fep3_fast_dds_plugin
 WORKDIR /root/fep3_fast_dds_plugin
+
+
 # RUN conan create ./thirdparty/dev_essential/conanfile.py /_@_ -pr ./build_profiles/linux_armv8_gcc9 --build=missing
 # RUN conan create ./thirdparty/fast_dds/conanfile.py /_@_ -pr build_profiles/linux_armv8_gcc9 --build=missing
 # RUN conan create thirdparty/fastdds-cxx/conanfile.py /_@_ -pr build_profiles/linux_armv8_gcc9
@@ -27,7 +34,13 @@ WORKDIR /root/fep3_fast_dds_plugin
 # RUN conan create thirdparty/fep3_system/conanfile.py /_@_ -pr build_profiles/linux_armv8_gcc9
 # RUN conan create thirdparty/fep3_base_utilities/conanfile.py /_@_ -pr build_profiles/linux_armv8_gcc9
 # RUN conan create thirdparty/fep3_sdk/conanfile.py /_@_ -pr build_profiles/linux_armv8_gcc9
-# RUN conan create . -pr build_profiles/linux_armv8_gcc9
+
+
+# RUN conan create . -pr build_profiles/linux_armv8_gcc9 --ignore-dirty
+# RUN conan upload fep3_fast_dds_plugin* -r=local --all -c --no-overwrite
+#  --force
+
+
 
 # To export with conan - run a local server and use:
 # "url": "http://host.docker.internal:9300" for the host conan server as url config
