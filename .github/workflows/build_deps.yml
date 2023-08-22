@@ -78,6 +78,9 @@ jobs:
           install: | 
             apt-get update -q -y
             apt-get install git wget g++-10 gcc-10 python3 python3-pip -y
+            wget https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-aarch64.sh
+            chmod +x ./cmake-3.26.3-linux-aarch64.sh
+            ./cmake-3.26.3-linux-aarch64.sh  --skip-license
             pip install "conan==1.59.0" --use-pep517
 
           run: |
