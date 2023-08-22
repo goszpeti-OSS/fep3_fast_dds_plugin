@@ -89,10 +89,5 @@ jobs:
             /cmake-3.26.3-linux-aarch64.sh  --skip-license
             conan remote add fep3_oss ${{ vars.FEP3_GITLAB_URL }} false
             conan user -p ${{ secrets.GITLAB_FEP3_PW }} -r fep3_oss ${{ secrets.GITLAB_FEP3_USERNAME }}
-            cd /repo && conan create thirdparty/dev_essential/conanfile.py fep_oss/testing -pr build_profiles/linux_armv8_gcc10
+            export PATH=$PATH:$PWD/bin && conan create thirdparty/dev_essential/conanfile.py fep_oss/testing -pr build_profiles/linux_armv8_gcc10
             conan upload "dev_essential*" -r=fep3_oss --all --confirm --force
-
-#  export PATH=$PATH:/root/bin && echo $PATH
-# conan user -p ${{ secrets.GITLAB_FEP3_PW }} -r fep3_oss ${{ secrets.GITLAB_FEP3_USERNAME }}
-# conan create thirdparty/dev_essential/conanfile.py fep_oss/testing -pr build_profiles/linux_armv8_gcc10
-# conan upload "dev_essential*" -r=fep3_oss --all --confirm --force

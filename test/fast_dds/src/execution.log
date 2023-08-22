@@ -1,0 +1,4 @@
+2023-05-18 14:47:49.541 [RTPS_PARTICIPANT Error] Cannot create persistence service. Persistence GUID not specified -> Function eprosima::fastrtps::rtps::RTPSParticipantImpl::get_persistence_service
+2023-05-18 14:47:49.541 [DATA_WRITER Error] Problem creating associated Writer -> Function eprosima::fastdds::dds::DataWriterImpl::enable
+2023-05-18 14:47:49.547 [RTPS_PARTICIPANT Error] Cannot create persistence service. Persistence GUID not specified -> Function eprosima::fastrtps::rtps::RTPSParticipantImpl::get_persistence_service
+2023-05-18 14:47:49.548 [DATA_READER Error] Problem creating associated Reader -> Function eprosima::fastdds::dds::DataReaderImpl::enable
