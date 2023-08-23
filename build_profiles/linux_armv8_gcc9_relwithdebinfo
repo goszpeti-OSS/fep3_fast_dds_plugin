@@ -11,4 +11,6 @@ dev_essential*:build_type=RelWithDebInfo
 [options]
 
 [env]
-CONAN_DISABLE_STRICT_MODE=1 
+CONAN_DISABLE_STRICT_MODE=1
+CC=gcc-9
+CXX=g++-9
