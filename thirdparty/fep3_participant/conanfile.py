@@ -33,7 +33,7 @@ class ConanProduct(ConanFile):
         return 
 
     def requirements(self):
-        self.requires("dev_essential/1.2.0")
+        self.requires(f"dev_essential/1.2.0@{self.user}/{self.channel}")
         self.requires("boost/1.75.0")
 
     def build(self):
