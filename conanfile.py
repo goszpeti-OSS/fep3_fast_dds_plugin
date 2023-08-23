@@ -9,6 +9,7 @@ class ConanProduct(ConanFile):
     generators = "cmake", "txt", "CMakeDeps"
     default_user = "local"
     default_channel = "testing"
+    short_paths=True
     options = []
     default_options = {
         "fast-dds:shared": False

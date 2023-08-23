@@ -35,11 +35,13 @@ class FastDDSConan(ConanFile):
         "shared": [True, False],
         "fPIC": [True, False],
         "with_ssl": [True, False],
+        "with_statistics": [True, False],
     }
     default_options = {
         "shared": False,
         "fPIC": True,
         "with_ssl": False,
+        "with_statistics": False
     }
 
     @property
@@ -102,7 +104,7 @@ class FastDDSConan(ConanFile):
         tc.variables["SECURITY"] = self.options.with_ssl
         tc.variables["EPROSIMA_INSTALLER_MINION"] = False
         tc.variables["COMPILE_EXAMPLES"] = False
-        tc.variables["FASTDDS_STATISTICS"] = False
+        tc.variables["FASTDDS_STATISTICS"] = True
         
         if is_msvc(self):
             tc.variables["USE_MSVC_RUNTIME_LIBRARY_DLL"] = not is_msvc_static_runtime(self)

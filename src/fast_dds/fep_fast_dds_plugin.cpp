@@ -8,7 +8,7 @@
 
 void fep3_plugin_getPluginVersion(void(*callback)(void*, const char*), void* destination)
 {
-    callback(destination, FEP3_PARTICIPANT_LIBRARY_VERSION_STR);
+    callback(destination, "0.1.0");
 }
 
  fep3::plugin::cpp::arya::ICPPPluginComponentFactory* fep3_plugin_cpp_arya_getFactory()

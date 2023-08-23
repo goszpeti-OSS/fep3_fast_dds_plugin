@@ -93,3 +93,8 @@ install(FILES
         USER_QOS_PROFILES_FULL.xml
         DESTINATION lib
 )
+
+install(FILES 
+        USER_QOS_PROFILES.xml
+        DESTINATION lib/fast_dds
+)
