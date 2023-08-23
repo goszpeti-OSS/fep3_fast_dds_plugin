@@ -48,14 +48,15 @@ jobs:
         run: |
           conan create thirdparty/dev_essential/conanfile.py ${{ env.CONAN_REF }} ${{ env.CONAN_PR_ARG }}
           conan create thirdparty/fast_dds/conanfile.py ${{ env.CONAN_REF }} ${{ env.CONAN_PR_ARG }} --build=missing
+          conan create thirdparty/fep3_participant/conanfile.py ${{ env.CONAN_REF }} ${{ env.CONAN_PR_ARG }}
+          conan create thirdparty/fep3_system/conanfile.py ${{ env.CONAN_REF }} ${{ env.CONAN_PR_ARG }}
+          conan create thirdparty/fep3_base_utilities/conanfile.py ${{ env.CONAN_REF }} ${{ env.CONAN_PR_ARG }}
+          conan create thirdparty/fep3_sdk/conanfile.py ${{ env.CONAN_REF }} ${{ env.CONAN_PR_ARG }}
       - name: Upload conan packages
         run: |
-            conan upload "*" -r=fep3_oss --all --confirm --force
-          
-          # conan create thirdparty/fep3_participant/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
-          # conan create thirdparty/fep3_system/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
-          # conan create thirdparty/fep3_base_utilities/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
-          # conan create thirdparty/fep3_sdk/conanfile.py /_@_ -pr build_profiles/${{ matrix.profile}}
+          conan upload "dev*" -r=fep3_oss --all --confirm --force
+          conan upload "fast*" -r=fep3_oss --all --confirm --force
+          conan upload "fep*" -r=fep3_oss --all --confirm --force
   # build_armv8_deps_docker:
   #   runs-on: ubuntu-latest
   #   steps:
