@@ -33,7 +33,7 @@ class ConanProduct(ConanFile):
         return 
 
     def requirements(self):
-        self.requires("fep_sdk_system/3.1.0")
+        self.requires(f"fep_sdk_system/3.1.0@{self.user}/{self.channel}")
         self.requires("boost/1.81.0")
 
     def build(self):
