@@ -34,7 +34,7 @@ class ConanProduct(ConanFile):
 
     def requirements(self):
         self.requires(f"fep_sdk_system/3.1.0@{self.user}/{self.channel}")
-        self.requires("boost/1.81.0")
+        self.requires("boost/1.75.0")
 
     def build(self):
         patch_str = (Path(self.source_folder) / "patch1.diff").read_text()
