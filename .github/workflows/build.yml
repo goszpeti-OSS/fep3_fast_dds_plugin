@@ -25,10 +25,10 @@ jobs:
         include:
           - name: "ubuntu20"
             os: ubuntu-20.04
-            profile: linux_gcc_9
+            profile: linux_gcc_9_relwithdebinfo
           - name: "windows2019"
             os: windows-2019
-            profile: win_142
+            profile: win_142_relwithdebinfo
         
     env:
       LC_ALL: "en_US.UTF-8"
