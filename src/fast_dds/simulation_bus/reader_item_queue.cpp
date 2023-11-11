@@ -6,6 +6,7 @@
 #include "stream_item_topic/stream_item_topic.h"
 
 #include <a_util/result.h>
+#include <a_util/system.h>
 
 #include <fep3/base/sample/data_sample.h>
 
@@ -45,6 +46,7 @@ ReaderItemQueue::ReaderItemQueue(const std::shared_ptr<fep3::ILogger>& logger,
     DataReaderQos rqos;
     _subscriber->get_datareader_qos_from_profile(std::string(FEP3_QOS_STREAM_TYPE) + "::reader", rqos);
     _streamtype_reader = _subscriber->create_datareader(topic->getStreamTypeTopic(), rqos);
+    wait_for_reader_connected(std::chrono::milliseconds(1200));
 }
 
 ReaderItemQueue::~ReaderItemQueue()
@@ -293,4 +295,18 @@ void ReaderItemQueue::on_subscription_matched(DataReader& /*reader*/,
 void ReaderItemQueue::on_sample_lost(DataReader& /*reader*/, const SampleLostStatus& /*status*/)
 {
     // std::cout << "           on_sample_lost" << std::endl;
+}
+
+void ReaderItemQueue::wait_for_reader_connected(std::chrono::milliseconds timeout){
+    SubscriptionMatchedStatus status ;
+
+    auto start_time = std::chrono::steady_clock::now();
+    while(std::chrono::steady_clock::now() - start_time < timeout){
+        a_util::system::sleepMilliseconds(timeout.count() / 10);
+        _sample_reader->get_subscription_matched_status(status);
+        if (status.total_count > 0){
+            break;
+            // std::cout << "No FEP writer match" << std::endl;
+        }
+    }
 }

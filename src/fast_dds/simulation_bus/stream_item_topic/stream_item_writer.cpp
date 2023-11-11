@@ -147,16 +147,6 @@ fep3::Result StreamItemDataWriter::transmit()
 {
     try
     {
-        // TODO no flush function?
-   /*     _stream_type_writer->flush();
-        _sample_writer->flush();*/
-
-        /*
-        The behavior of transmit() is not finally defined. Maybe we need to block until data was send
-        _stream_type_writer->wait_for_acknowledgments(dds::core::Duration(0, 1000000));
-        _sample_writer->wait_for_acknowledgments(dds::core::Duration(0, 1000000));
-        */
-
         return {};
     }
     catch (eprosima::fastcdr::exception::Exception& exception)
